@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Tools.InnoSetup" Version="6.7.3" GeneratePathProperty="true" />
+  </ItemGroup>
+  <Target Name="BuildInstaller" AfterTargets="Build">
+    <Exec Command="&quot;$(InnoSetupCompiler)&quot; &quot;$(MSBuildProjectDirectory)\BatchCraft.iss&quot;" />
+  </Target>
+</Project>

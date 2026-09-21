@@ -1,0 +1,14 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+publish-win-x64/
+installer/output/
+installer/bin/
+installer/obj/
+*.user
+*.suo
+.vs/
+.dotnet/
+.dotnet-home/
+*.partial
+dotnet-install.ps1
