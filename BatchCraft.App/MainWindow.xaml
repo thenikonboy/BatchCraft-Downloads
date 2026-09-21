@@ -27,14 +27,20 @@
     <Style TargetType="TextBox"><Setter Property="Padding" Value="9"/><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/></Style>
     <Style TargetType="ComboBox"><Setter Property="Padding" Value="8"/><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/></Style>
     <Style TargetType="ListBox"><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/></Style>
-    <Style TargetType="TabControl"><Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/></Style>
+    <Style TargetType="TabControl">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>
     <Style TargetType="TabItem">
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
       <Setter Property="Background" Value="{DynamicResource InputBrush}"/>
       <Setter Property="Padding" Value="14,8"/>
       <Setter Property="Margin" Value="0,0,5,0"/>
       <Setter Property="Height" Value="38"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="TabItem">
@@ -56,7 +62,12 @@
         </Setter.Value>
       </Setter>
     </Style>
-    <Style x:Key="Panel" TargetType="Border"><Setter Property="Background" Value="{DynamicResource PanelBrush}"/><Setter Property="CornerRadius" Value="12"/><Setter Property="Padding" Value="18,16"/></Style>
+    <Style x:Key="Panel" TargetType="Border">
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="18,16"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
     <Style x:Key="DropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="18"/><Setter Property="AllowDrop" Value="True"/></Style>
     <Style x:Key="CompactDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="9"/><Setter Property="Padding" Value="14,9"/><Setter Property="AllowDrop" Value="True"/></Style>
   </Window.Resources>
@@ -88,7 +99,7 @@
         </TabItem.Header>
         <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
           <Grid>
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,16,0">
               <StackPanel>
                 <TextBlock x:Name="PdfToImagesTitle" FontSize="20" FontWeight="SemiBold"/>
@@ -134,7 +145,7 @@
                 </StackPanel>
                 <ScrollViewer Grid.Row="1" Tag="{Binding ElementName=PdfZoomSlider}" PreviewMouseWheel="Preview_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                   <Grid>
-                    <Image x:Name="PdfPreviewImage" Stretch="Uniform" MaxWidth="260" MaxHeight="360">
+                    <Image x:Name="PdfPreviewImage" Stretch="Uniform" MaxWidth="350" MaxHeight="520">
                       <Image.LayoutTransform><ScaleTransform ScaleX="{Binding ElementName=PdfZoomSlider, Path=Value}" ScaleY="{Binding ElementName=PdfZoomSlider, Path=Value}"/></Image.LayoutTransform>
                     </Image>
                     <TextBlock x:Name="PdfPreviewEmpty" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource MutedBrush}"/>
@@ -162,7 +173,7 @@
         </TabItem.Header>
         <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
           <Grid>
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
             <Grid Margin="0,0,18,0">
               <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
               <TextBlock x:Name="ImagesToPdfTitle" FontSize="20" FontWeight="SemiBold"/>
@@ -179,7 +190,7 @@
                   <Button Grid.Column="2" x:Name="AddImagesButton" Margin="8,0,0,0" Padding="14,6" Click="AddImages_Click"/>
                 </Grid>
               </Border>
-              <ListBox Grid.Row="3" x:Name="ImageList" AllowDrop="True" Drop="Images_Drop" DragOver="Files_DragOver" SelectionChanged="ImageList_SelectionChanged"/>
+              <ListBox Grid.Row="3" x:Name="ImageList" MinHeight="200" AllowDrop="True" Drop="Images_Drop" DragOver="Files_DragOver" SelectionChanged="ImageList_SelectionChanged"/>
               <WrapPanel Grid.Row="4" Margin="0,8,0,0">
                 <Button x:Name="RemoveImageButton" Click="RemoveImage_Click"/>
                 <Button x:Name="ImageUpButton" Click="ImageUp_Click"/>
@@ -193,7 +204,7 @@
                 <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                 <ScrollViewer Tag="{Binding ElementName=ImageZoomSlider}" PreviewMouseWheel="Preview_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                   <Grid>
-                    <Image x:Name="ImagePreview" Stretch="Uniform" MaxWidth="260" MaxHeight="400">
+                    <Image x:Name="ImagePreview" Stretch="Uniform" MaxWidth="350" MaxHeight="520">
                       <Image.LayoutTransform><ScaleTransform ScaleX="{Binding ElementName=ImageZoomSlider, Path=Value}" ScaleY="{Binding ElementName=ImageZoomSlider, Path=Value}"/></Image.LayoutTransform>
                     </Image>
                     <TextBlock x:Name="ImagePreviewEmpty" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource MutedBrush}"/>
@@ -221,7 +232,7 @@
         </TabItem.Header>
         <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
           <Grid>
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
             <Grid Margin="0,0,18,0">
               <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
               <TextBlock x:Name="MergePdfTitle" FontSize="20" FontWeight="SemiBold"/>
@@ -238,7 +249,7 @@
                   <Button Grid.Column="2" x:Name="AddPdfsButton" Margin="8,0,0,0" Padding="14,6" Click="AddPdfs_Click"/>
                 </Grid>
               </Border>
-              <ListBox Grid.Row="3" x:Name="PdfList" AllowDrop="True" Drop="Pdfs_Drop" DragOver="Files_DragOver" SelectionChanged="PdfList_SelectionChanged"/>
+              <ListBox Grid.Row="3" x:Name="PdfList" MinHeight="200" AllowDrop="True" Drop="Pdfs_Drop" DragOver="Files_DragOver" SelectionChanged="PdfList_SelectionChanged"/>
               <WrapPanel Grid.Row="4" Margin="0,8,0,0">
                 <Button x:Name="RemovePdfButton" Click="RemovePdf_Click"/>
                 <Button x:Name="PdfUpButton" Click="PdfUp_Click"/>
@@ -257,7 +268,7 @@
                 </StackPanel>
                 <ScrollViewer Grid.Row="1" Tag="{Binding ElementName=MergeZoomSlider}" PreviewMouseWheel="Preview_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                   <Grid>
-                    <Image x:Name="MergePreviewImage" Stretch="Uniform" MaxWidth="260" MaxHeight="360">
+                    <Image x:Name="MergePreviewImage" Stretch="Uniform" MaxWidth="350" MaxHeight="520">
                       <Image.LayoutTransform><ScaleTransform ScaleX="{Binding ElementName=MergeZoomSlider, Path=Value}" ScaleY="{Binding ElementName=MergeZoomSlider, Path=Value}"/></Image.LayoutTransform>
                     </Image>
                     <TextBlock x:Name="MergePreviewEmpty" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource MutedBrush}"/>
@@ -285,7 +296,7 @@
         </TabItem.Header>
         <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
           <Grid>
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,16,0">
               <StackPanel>
                 <TextBlock x:Name="SplitPdfTitle" FontSize="20" FontWeight="SemiBold"/>
@@ -342,7 +353,7 @@
                 </StackPanel>
                 <ScrollViewer Grid.Row="1" Tag="{Binding ElementName=SplitZoomSlider}" PreviewMouseWheel="Preview_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                   <Grid>
-                    <Image x:Name="SplitPreviewImage" Stretch="Uniform" MaxWidth="260" MaxHeight="360">
+                    <Image x:Name="SplitPreviewImage" Stretch="Uniform" MaxWidth="350" MaxHeight="520">
                       <Image.LayoutTransform><ScaleTransform ScaleX="{Binding ElementName=SplitZoomSlider, Path=Value}" ScaleY="{Binding ElementName=SplitZoomSlider, Path=Value}"/></Image.LayoutTransform>
                     </Image>
                     <TextBlock x:Name="SplitPreviewEmpty" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource MutedBrush}"/>
@@ -370,7 +381,7 @@
         </TabItem.Header>
         <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
           <Grid>
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,16,0">
               <StackPanel>
                 <TextBlock x:Name="RotatePdfTitle" FontSize="20" FontWeight="SemiBold"/>
@@ -430,7 +441,7 @@
                 </StackPanel>
                 <ScrollViewer Grid.Row="1" Tag="{Binding ElementName=RotateZoomSlider}" PreviewMouseWheel="Preview_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                   <Grid>
-                    <Image x:Name="RotatePreviewImage" Stretch="Uniform" MaxWidth="260" MaxHeight="360">
+                    <Image x:Name="RotatePreviewImage" Stretch="Uniform" MaxWidth="350" MaxHeight="520">
                       <Image.LayoutTransform>
                         <TransformGroup>
                           <RotateTransform x:Name="RotatePreviewTransform" Angle="0"/>
