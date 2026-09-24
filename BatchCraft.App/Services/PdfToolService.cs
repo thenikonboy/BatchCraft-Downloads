@@ -22,22 +22,53 @@ public sealed class PdfToolService
         return document.PageCount;
     }
 
-    public Task<int> PdfToImagesAsync(string inputPdf, string outputFolder, bool jpeg, IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+    public Task<int> PdfToImagesAsync(string inputPdf, string outputFolder, bool jpeg, IProgress<ToolProgress>? progress = null) =>
+        MultiplePdfsToImagesAsync([inputPdf], outputFolder, jpeg, null, progress);
+
+    public Task<int> MultiplePdfsToImagesAsync(
+        IReadOnlyList<string> inputPdfs, 
+        string outputFolder, 
+        bool jpeg, 
+        Func<string, string>? resolveDestinationPath = null,
+        IProgress<ToolProgress>? progress = null) => Task.Run(() =>
     {
+        if (inputPdfs.Count == 0) throw new InvalidOperationException("Add at least one PDF file.");
         Directory.CreateDirectory(outputFolder);
-        var baseName = Path.GetFileNameWithoutExtension(inputPdf);
-        int pageCount;
-        using (var document = PdfReader.Open(inputPdf, PdfDocumentOpenMode.Import)) pageCount = document.PageCount;
-        for (var page = 0; page < pageCount; page++)
+
+        var docPageCounts = new List<(string PdfPath, string BaseName, int PageCount)>();
+        var totalPages = 0;
+        foreach (var pdf in inputPdfs)
         {
-            var output = Path.Combine(outputFolder, $"{baseName}-page-{page + 1:000}.{(jpeg ? "jpg" : "png")}");
-            using var input = File.OpenRead(inputPdf);
-            if (jpeg) Conversion.SaveJpeg(output, input, page: page);
-            else Conversion.SavePng(output, input, page: page);
-            progress?.Report(new ToolProgress(page + 1, pageCount));
+            if (!File.Exists(pdf)) continue;
+            using var document = PdfReader.Open(pdf, PdfDocumentOpenMode.Import);
+            var count = document.PageCount;
+            if (count > 0)
+            {
+                docPageCounts.Add((pdf, Path.GetFileNameWithoutExtension(pdf), count));
+                totalPages += count;
+            }
         }
-        if (pageCount == 0) throw new InvalidDataException("The PDF has no readable pages.");
-        return pageCount;
+        if (totalPages == 0) throw new InvalidDataException("No readable pages found in selected PDF files.");
+
+        var convertedCount = 0;
+        foreach (var (pdfPath, baseName, count) in docPageCounts)
+        {
+            for (var page = 0; page < count; page++)
+            {
+                var defaultOutput = Path.Combine(outputFolder, $"{baseName}-page-{page + 1:000}.{(jpeg ? "jpg" : "png")}");
+                var finalOutput = resolveDestinationPath != null ? resolveDestinationPath(defaultOutput) : defaultOutput;
+                var finalDir = Path.GetDirectoryName(finalOutput);
+                if (!string.IsNullOrWhiteSpace(finalDir)) Directory.CreateDirectory(finalDir);
+
+                using var input = File.OpenRead(pdfPath);
+                if (jpeg) Conversion.SaveJpeg(finalOutput, input, page: page);
+                else Conversion.SavePng(finalOutput, input, page: page);
+
+                convertedCount++;
+                progress?.Report(new ToolProgress(convertedCount, totalPages));
+            }
+        }
+        return convertedCount;
     });
 
     public Task ImagesToPdfAsync(IReadOnlyList<string> images, string outputPdf, IProgress<ToolProgress>? progress = null) => Task.Run(() =>
@@ -71,7 +102,7 @@ public sealed class PdfToolService
         output.Save(outputPdf);
     });
 
-    public Task<int> SplitPdfAllPagesAsync(string inputPdf, string outputFolder, IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+    public Task<int> SplitPdfAllPagesAsync(string inputPdf, string outputFolder, Func<string, string>? resolveDestinationPath = null, IProgress<ToolProgress>? progress = null) => Task.Run(() =>
     {
         Directory.CreateDirectory(outputFolder);
         var baseName = Path.GetFileNameWithoutExtension(inputPdf);
@@ -81,7 +112,8 @@ public sealed class PdfToolService
 
         for (var page = 0; page < pageCount; page++)
         {
-            var outputPdf = Path.Combine(outputFolder, $"{baseName}-page-{page + 1:000}.pdf");
+            var defaultOutput = Path.Combine(outputFolder, $"{baseName}-page-{page + 1:000}.pdf");
+            var outputPdf = resolveDestinationPath != null ? resolveDestinationPath(defaultOutput) : defaultOutput;
             using var singlePageDoc = new PdfDocument();
             singlePageDoc.AddPage(input.Pages[page]);
             singlePageDoc.Save(outputPdf);
@@ -150,6 +182,78 @@ public sealed class PdfToolService
         outputDoc.Save(outputPdf);
         return pageCount;
     });
+
+    public Task<int> WatermarkPdfAsync(
+        string inputPdf, 
+        string outputPdf, 
+        string watermarkText, 
+        double fontSize, 
+        double opacity, 
+        double angleDegrees, 
+        XColor color, 
+        RotationPageScope scope, 
+        string? customRange = null, 
+        IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+    {
+        using var input = PdfReader.Open(inputPdf, PdfDocumentOpenMode.Import);
+        var pageCount = input.PageCount;
+        if (pageCount == 0) throw new InvalidDataException("The PDF has no readable pages.");
+
+        var customPages = scope == RotationPageScope.Custom && !string.IsNullOrWhiteSpace(customRange)
+            ? ParsePageRanges(customRange, pageCount).ToHashSet()
+            : [];
+
+        var outputDir = Path.GetDirectoryName(outputPdf);
+        if (!string.IsNullOrWhiteSpace(outputDir)) Directory.CreateDirectory(outputDir);
+
+        using var outputDoc = new PdfDocument();
+        for (var pageIndex = 0; pageIndex < pageCount; pageIndex++)
+        {
+            var pageNumber = pageIndex + 1;
+            var shouldWatermark = scope switch
+            {
+                RotationPageScope.All => true,
+                RotationPageScope.Odd => pageNumber % 2 != 0,
+                RotationPageScope.Even => pageNumber % 2 == 0,
+                RotationPageScope.Custom => customPages.Contains(pageIndex),
+                _ => true
+            };
+
+            var newPage = outputDoc.AddPage(input.Pages[pageIndex]);
+            if (shouldWatermark && !string.IsNullOrWhiteSpace(watermarkText))
+            {
+                using var gfx = XGraphics.FromPdfPage(newPage, XGraphicsPdfPageOptions.Append);
+                var font = new XFont("Segoe UI", fontSize, XFontStyleEx.Bold);
+                var size = gfx.MeasureString(watermarkText, font);
+                gfx.TranslateTransform(newPage.Width.Point / 2, newPage.Height.Point / 2);
+                gfx.RotateTransform(-angleDegrees);
+                var alpha = (int)(Math.Clamp(opacity, 0.05, 1.0) * 255);
+                var brushColor = XColor.FromArgb(alpha, color.R, color.G, color.B);
+                var brush = new XSolidBrush(brushColor);
+                gfx.DrawString(watermarkText, font, brush, -size.Width / 2, size.Height / 4);
+            }
+            progress?.Report(new ToolProgress(pageIndex + 1, pageCount));
+        }
+
+        outputDoc.Save(outputPdf);
+        return pageCount;
+    });
+
+    public static string GetNonConflictingPath(string path)
+    {
+        if (!File.Exists(path)) return path;
+        var dir = Path.GetDirectoryName(path) ?? "";
+        var baseName = Path.GetFileNameWithoutExtension(path);
+        var ext = Path.GetExtension(path);
+        var counter = 1;
+        string candidate;
+        do
+        {
+            candidate = Path.Combine(dir, $"{baseName} ({counter}){ext}");
+            counter++;
+        } while (File.Exists(candidate));
+        return candidate;
+    }
 
     public static List<int> ParsePageRanges(string expression, int maxPages)
     {

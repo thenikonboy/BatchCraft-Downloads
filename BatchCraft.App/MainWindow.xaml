@@ -17,6 +17,7 @@
     <Geometry x:Key="IconMergePdfGeometry">M2,1 C1.45,1 1,1.45 1,2 L1,11 C1,11.55 1.45,12 2,12 L4,12 L4,10.5 L2.5,10.5 L2.5,2.5 L6.5,2.5 L6.5,5.5 L9.5,5.5 L9.5,6.5 L11,6.5 L11,5 L7,1 L2,1 Z M6,6 C5.45,6 5,6.45 5,7 L5,15 C5,15.55 5.45,16 6,16 L14,16 C14.55,16 15,15.55 15,15 L15,9.5 L11.5,6 L6,6 Z M11,7.2 L13.8,10 L11,10 Z M7,11 L9,11 L9,9 L10.5,9 L10.5,11 L12.5,11 L12.5,12.5 L10.5,12.5 L10.5,14.5 L9,14.5 L9,12.5 L7,12.5 Z</Geometry>
     <Geometry x:Key="IconSplitPdfGeometry">M9.6,8 L12.5,11 C13.3,11.8 13.3,13.1 12.5,13.9 C11.7,14.7 10.4,14.7 9.6,13.9 L7.5,11.8 L5.4,13.9 C4.6,14.7 3.3,14.7 2.5,13.9 C1.7,13.1 1.7,11.8 2.5,11 L5.4,8 L2.5,5 C1.7,4.2 1.7,2.9 2.5,2.1 C3.3,1.3 4.6,1.3 5.4,2.1 L7.5,4.2 L9.6,2.1 C10.4,1.3 11.7,1.3 12.5,2.1 C13.3,2.9 13.3,4.2 12.5,5 L9.6,8 Z M3.5,11.8 C3.2,12.1 3.2,12.6 3.5,12.9 C3.8,13.2 4.3,13.2 4.6,12.9 C4.9,12.6 4.9,12.1 4.6,11.8 C4.3,11.5 3.8,11.5 3.5,11.8 Z M10.4,11.8 C10.1,12.1 10.1,12.6 10.4,12.9 C10.7,13.2 11.2,13.2 11.5,12.9 C11.8,12.6 11.8,12.1 11.5,11.8 C11.2,11.5 10.7,11.5 10.4,11.8 Z</Geometry>
     <Geometry x:Key="IconRotatePdfGeometry">M8,1 C11.9,1 15,4.1 15,8 C15,9.6 14.5,11.1 13.5,12.3 L12.3,11.2 C13,10.3 13.5,9.2 13.5,8 C13.5,5 11,2.5 8,2.5 C6.3,2.5 4.8,3.3 3.8,4.5 L6,6.7 L1,6.7 L1,1.7 L2.8,3.5 C4.1,2 6,1 8,1 Z M6,7.5 L10.5,7.5 C11.1,7.5 11.5,7.9 11.5,8.5 L11.5,13.5 C11.5,14.1 11.1,14.5 10.5,14.5 L6,14.5 C5.4,14.5 5,14.1 5,13.5 L5,8.5 C5,7.9 5.4,7.5 6,7.5 Z</Geometry>
+    <Geometry x:Key="IconWatermarkGeometry">M6,2 C6,1.4 6.5,1 7,1 L9,1 C9.5,1 10,1.4 10,2 L10,5 L12,5 C13.1,5 14,5.9 14,7 L14,9 L2,9 L2,7 C2,5.9 2.9,5 4,5 L6,5 Z M1,11 L15,11 C15.5,11 16,11.5 16,12 L16,14 C16,14.5 15.5,15 15,15 L1,15 C0.5,15 0,14.5 0,14 L0,12 C0,11.5 0.5,11 1,11 Z</Geometry>
     <Geometry x:Key="IconSettingsGeometry">M8,5.2 A2.8,2.8 0 1,0 8,10.8 A2.8,2.8 0 0,0 8,5.2 Z M15.2,7.2 L13.9,7 A5.2,5.2 0 0,0 13.3,5.7 L14.2,4.6 A0.7,0.7 0 0,0 14.1,3.6 L13,2.5 A0.7,0.7 0 0,0 12,2.4 L10.9,3.3 A5.2,5.2 0 0,0 9.6,2.7 L9.4,1.4 A0.7,0.7 0 0,0 8.7,0.8 L7.3,0.8 A0.7,0.7 0 0,0 6.6,1.4 L6.4,2.7 A5.2,5.2 0 0,0 5.1,3.3 L4,2.4 A0.7,0.7 0 0,0 3,2.5 L1.9,3.6 A0.7,0.7 0 0,0 1.8,4.6 L2.7,5.7 A5.2,5.2 0 0,0 2.1,7 L0.8,7.2 A0.7,0.7 0 0,0 0.2,7.9 L0.2,9.3 A0.7,0.7 0 0,0 0.8,10 L2.1,10.2 A5.2,5.2 0 0,0 2.7,11.5 L1.8,12.6 A0.7,0.7 0 0,0 1.9,13.6 L3,14.7 A0.7,0.7 0 0,0 4,14.8 L5.1,13.9 A5.2,5.2 0 0,0 6.4,14.5 L6.6,15.8 A0.7,0.7 0 0,0 7.3,16.4 L8.7,16.4 A0.7,0.7 0 0,0 9.4,15.8 L9.6,14.5 A5.2,5.2 0 0,0 10.9,13.9 L12,14.8 A0.7,0.7 0 0,0 13,14.7 L14.1,13.6 A0.7,0.7 0 0,0 14.2,12.6 L13.3,11.5 A5.2,5.2 0 0,0 13.9,10.2 L15.2,10 A0.7,0.7 0 0,0 15.8,9.3 L15.8,7.9 A0.7,0.7 0 0,0 15.2,7.2 Z</Geometry>
     <Geometry x:Key="IconAboutGeometry">M8,1 A7,7 0 1,0 8,15 A7,7 0 0,0 8,1 Z M7.2,4.2 A0.9,0.9 0 1,1 8.8,4.2 A0.9,0.9 0 0,1 7.2,4.2 Z M7,6.5 L9,6.5 L9,11.5 L7,11.5 Z</Geometry>
 
@@ -70,6 +71,7 @@
     </Style>
     <Style x:Key="DropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="18"/><Setter Property="AllowDrop" Value="True"/></Style>
     <Style x:Key="CompactDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="9"/><Setter Property="Padding" Value="14,9"/><Setter Property="AllowDrop" Value="True"/></Style>
+    <Style x:Key="SquareDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="16,12"/><Setter Property="MinHeight" Value="86"/><Setter Property="AllowDrop" Value="True"/><Setter Property="Cursor" Value="Hand"/></Style>
   </Window.Resources>
   <Grid Margin="24"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
     <DockPanel Margin="0,0,0,16">
@@ -100,41 +102,52 @@
         <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
           <Grid>
             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,16,0">
-              <StackPanel>
-                <TextBlock x:Name="PdfToImagesTitle" FontSize="20" FontWeight="SemiBold"/>
-                <TextBlock x:Name="PdfToImagesHint" Margin="0,3,0,10" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
-                <Border Style="{StaticResource CompactDropZone}" Drop="PdfInput_Drop" DragOver="Files_DragOver" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="Auto"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Path Width="22" Height="22" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="2,0,12,0" Data="{StaticResource IconPdfToImagesGeometry}"/>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                      <TextBlock x:Name="DropPdfText" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="PDF (.pdf)" FontSize="11" Foreground="{DynamicResource MutedBrush}" Margin="0,1,0,0"/>
+            <Grid Margin="0,0,18,0">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
+              <TextBlock x:Name="PdfToImagesTitle" FontSize="20" FontWeight="SemiBold"/>
+              <TextBlock x:Name="PdfToImagesHint" Grid.Row="1" Margin="0,3,0,10" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
+              <Border Grid.Row="2" Style="{StaticResource SquareDropZone}" Drop="PdfInput_Drop" DragOver="Files_DragOver" MouseLeftButtonUp="PickPdf_Click" Margin="0,0,0,8">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Path Width="26" Height="26" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,5" Data="{StaticResource IconPdfToImagesGeometry}"/>
+                  <TextBlock x:Name="DropPdfText" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                  <Button x:Name="PickPdfButton" Margin="0,6,0,0" Padding="14,5" Click="PickPdf_Click" HorizontalAlignment="Center"/>
+                </StackPanel>
+              </Border>
+              <ListBox Grid.Row="3" x:Name="PdfToImagesList" MinHeight="130" AllowDrop="True" Drop="PdfInput_Drop" DragOver="Files_DragOver" SelectionChanged="PdfToImagesList_SelectionChanged"/>
+              <WrapPanel Grid.Row="4" Margin="0,6,0,8">
+                <Button x:Name="AddMorePdfsButton" Click="AddMorePdfs_Click"/>
+                <Button x:Name="RemovePdfItemButton" Click="RemovePdfItem_Click"/>
+                <Button x:Name="ClearPdfItemsButton" Click="ClearPdfItems_Click"/>
+              </WrapPanel>
+              <Border Grid.Row="5" Background="{DynamicResource InputBrush}" CornerRadius="8" Padding="12,10">
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                  </Grid.RowDefinitions>
+                  <TextBlock x:Name="ImageOutputLabel" FontSize="12" Margin="0,0,0,4"/>
+                  <DockPanel Grid.Row="1" Margin="0,0,0,8">
+                    <Button x:Name="PickImageOutputButton" DockPanel.Dock="Right" Click="PickImageOutput_Click"/>
+                    <TextBox x:Name="ImageOutputText" IsReadOnly="True"/>
+                  </DockPanel>
+                  <DockPanel Grid.Row="2">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                      <RadioButton x:Name="JpegOption" IsChecked="True" Content="JPG (JPEG)" Margin="0,0,18,0" Foreground="{DynamicResource TextBrush}"/>
+                      <RadioButton x:Name="PngOption" Content="PNG" Foreground="{DynamicResource TextBrush}"/>
                     </StackPanel>
-                    <Button Grid.Column="2" x:Name="PickPdfButton" Margin="8,0,0,0" Padding="14,6" Click="PickPdf_Click"/>
-                  </Grid>
-                </Border>
-                <TextBlock x:Name="SelectedFileLabel" FontSize="12" Margin="0,0,0,3"/>
-                <TextBox x:Name="PdfInputText" Margin="0,0,0,10" IsReadOnly="True"/>
-                <TextBlock x:Name="ImageOutputLabel" FontSize="12" Margin="0,0,0,3"/>
-                <DockPanel Margin="0,0,0,10">
-                  <Button x:Name="PickImageOutputButton" DockPanel.Dock="Right" Click="PickImageOutput_Click"/>
-                  <TextBox x:Name="ImageOutputText" IsReadOnly="True"/>
-                </DockPanel>
-                <Border Background="{DynamicResource InputBrush}" CornerRadius="8" Padding="12,10" Margin="0,0,0,12">
-                  <StackPanel Orientation="Horizontal">
-                    <RadioButton x:Name="PngOption" IsChecked="True" Margin="0,0,20,0" Foreground="{DynamicResource TextBrush}"/>
-                    <RadioButton x:Name="JpegOption" Foreground="{DynamicResource TextBrush}"/>
-                  </StackPanel>
-                </Border>
-                <Button x:Name="ConvertPdfButton" HorizontalAlignment="Left" Style="{StaticResource PrimaryButton}" Padding="20,9" Click="ConvertPdf_Click"/>
-              </StackPanel>
-            </ScrollViewer>
+                    <Button x:Name="ConvertPdfButton" HorizontalAlignment="Right" Style="{StaticResource PrimaryButton}" Padding="20,9" Click="ConvertPdf_Click"/>
+                  </DockPanel>
+                </Grid>
+              </Border>
+            </Grid>
             <Border Grid.Column="1" Background="{DynamicResource DropBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10">
               <Grid>
                 <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
@@ -178,20 +191,16 @@
               <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
               <TextBlock x:Name="ImagesToPdfTitle" FontSize="20" FontWeight="SemiBold"/>
               <TextBlock x:Name="ImagesToPdfHint" Grid.Row="1" Margin="0,3,0,8" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
-              <Border Grid.Row="2" Style="{StaticResource CompactDropZone}" Drop="Images_Drop" DragOver="Files_DragOver" Margin="0,0,0,8">
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-                  <Path Width="22" Height="22" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="2,0,12,0" Data="{StaticResource IconImagesToPdfGeometry}"/>
-                  <TextBlock Grid.Column="1" x:Name="DropImagesText" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                  <Button Grid.Column="2" x:Name="AddImagesButton" Margin="8,0,0,0" Padding="14,6" Click="AddImages_Click"/>
-                </Grid>
+              <Border Grid.Row="2" Style="{StaticResource SquareDropZone}" Drop="Images_Drop" DragOver="Files_DragOver" MouseLeftButtonUp="AddImages_Click" Margin="0,0,0,8">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Path Width="26" Height="26" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,5" Data="{StaticResource IconImagesToPdfGeometry}"/>
+                  <TextBlock Grid.Column="1" x:Name="DropImagesText" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                  <TextBlock Text="ลากไฟล์รูปภาพหลายรูปมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์" FontSize="11" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                </StackPanel>
               </Border>
-              <ListBox Grid.Row="3" x:Name="ImageList" MinHeight="200" AllowDrop="True" Drop="Images_Drop" DragOver="Files_DragOver" SelectionChanged="ImageList_SelectionChanged"/>
+              <ListBox Grid.Row="3" x:Name="ImageList" MinHeight="180" AllowDrop="True" Drop="Images_Drop" DragOver="Files_DragOver" SelectionChanged="ImageList_SelectionChanged"/>
               <WrapPanel Grid.Row="4" Margin="0,8,0,0">
+                <Button x:Name="AddImagesButton" Click="AddImages_Click"/>
                 <Button x:Name="RemoveImageButton" Click="RemoveImage_Click"/>
                 <Button x:Name="ImageUpButton" Click="ImageUp_Click"/>
                 <Button x:Name="ImageDownButton" Click="ImageDown_Click"/>
@@ -237,20 +246,16 @@
               <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
               <TextBlock x:Name="MergePdfTitle" FontSize="20" FontWeight="SemiBold"/>
               <TextBlock x:Name="MergePdfHint" Grid.Row="1" Margin="0,3,0,8" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
-              <Border Grid.Row="2" Style="{StaticResource CompactDropZone}" Drop="Pdfs_Drop" DragOver="Files_DragOver" Margin="0,0,0,8">
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-                  <Path Width="22" Height="22" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="2,0,12,0" Data="{StaticResource IconMergePdfGeometry}"/>
-                  <TextBlock Grid.Column="1" x:Name="DropPdfsText" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                  <Button Grid.Column="2" x:Name="AddPdfsButton" Margin="8,0,0,0" Padding="14,6" Click="AddPdfs_Click"/>
-                </Grid>
+              <Border Grid.Row="2" Style="{StaticResource SquareDropZone}" Drop="Pdfs_Drop" DragOver="Files_DragOver" MouseLeftButtonUp="AddPdfs_Click" Margin="0,0,0,8">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <Path Width="26" Height="26" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,5" Data="{StaticResource IconMergePdfGeometry}"/>
+                  <TextBlock Grid.Column="1" x:Name="DropPdfsText" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                  <TextBlock Text="ลากไฟล์ PDF หลายไฟล์มาวางที่นี่เพื่อรวม หรือคลิกเพื่อเลือกไฟล์" FontSize="11" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                </StackPanel>
               </Border>
-              <ListBox Grid.Row="3" x:Name="PdfList" MinHeight="200" AllowDrop="True" Drop="Pdfs_Drop" DragOver="Files_DragOver" SelectionChanged="PdfList_SelectionChanged"/>
+              <ListBox Grid.Row="3" x:Name="PdfList" MinHeight="180" AllowDrop="True" Drop="Pdfs_Drop" DragOver="Files_DragOver" SelectionChanged="PdfList_SelectionChanged"/>
               <WrapPanel Grid.Row="4" Margin="0,8,0,0">
+                <Button x:Name="AddPdfsButton" Click="AddPdfs_Click"/>
                 <Button x:Name="RemovePdfButton" Click="RemovePdf_Click"/>
                 <Button x:Name="PdfUpButton" Click="PdfUp_Click"/>
                 <Button x:Name="PdfDownButton" Click="PdfDown_Click"/>
@@ -301,20 +306,12 @@
               <StackPanel>
                 <TextBlock x:Name="SplitPdfTitle" FontSize="20" FontWeight="SemiBold"/>
                 <TextBlock x:Name="SplitPdfHint" Margin="0,3,0,10" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
-                <Border Style="{StaticResource CompactDropZone}" Drop="SplitPdf_Drop" DragOver="Files_DragOver" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="Auto"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Path Width="22" Height="22" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="2,0,12,0" Data="{StaticResource IconSplitPdfGeometry}"/>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                      <TextBlock x:Name="DropSplitPdfText" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="PDF (.pdf)" FontSize="11" Foreground="{DynamicResource MutedBrush}" Margin="0,1,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="2" x:Name="PickSplitPdfButton" Margin="8,0,0,0" Padding="14,6" Click="PickSplitPdf_Click"/>
-                  </Grid>
+                <Border Style="{StaticResource SquareDropZone}" Drop="SplitPdf_Drop" DragOver="Files_DragOver" MouseLeftButtonUp="PickSplitPdf_Click" Margin="0,0,0,10">
+                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="26" Height="26" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,5" Data="{StaticResource IconSplitPdfGeometry}"/>
+                    <TextBlock x:Name="DropSplitPdfText" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <Button x:Name="PickSplitPdfButton" Margin="0,6,0,0" Padding="14,5" Click="PickSplitPdf_Click" HorizontalAlignment="Center"/>
+                  </StackPanel>
                 </Border>
                 <TextBlock x:Name="SplitSelectedFileLabel" FontSize="12" Margin="0,0,0,3"/>
                 <TextBox x:Name="SplitPdfInputText" Margin="0,0,0,10" IsReadOnly="True"/>
@@ -386,20 +383,12 @@
               <StackPanel>
                 <TextBlock x:Name="RotatePdfTitle" FontSize="20" FontWeight="SemiBold"/>
                 <TextBlock x:Name="RotatePdfHint" Margin="0,3,0,10" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
-                <Border Style="{StaticResource CompactDropZone}" Drop="RotatePdf_Drop" DragOver="Files_DragOver" Margin="0,0,0,10">
-                  <Grid>
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="Auto"/>
-                      <ColumnDefinition Width="*"/>
-                      <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Path Width="22" Height="22" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="2,0,12,0" Data="{StaticResource IconRotatePdfGeometry}"/>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                      <TextBlock x:Name="DropRotatePdfText" FontSize="14" FontWeight="SemiBold"/>
-                      <TextBlock Text="PDF (.pdf)" FontSize="11" Foreground="{DynamicResource MutedBrush}" Margin="0,1,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="2" x:Name="PickRotatePdfButton" Margin="8,0,0,0" Padding="14,6" Click="PickRotatePdf_Click"/>
-                  </Grid>
+                <Border Style="{StaticResource SquareDropZone}" Drop="RotatePdf_Drop" DragOver="Files_DragOver" MouseLeftButtonUp="PickRotatePdf_Click" Margin="0,0,0,10">
+                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="26" Height="26" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,5" Data="{StaticResource IconRotatePdfGeometry}"/>
+                    <TextBlock x:Name="DropRotatePdfText" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <Button x:Name="PickRotatePdfButton" Margin="0,6,0,0" Padding="14,5" Click="PickRotatePdf_Click" HorizontalAlignment="Center"/>
+                  </StackPanel>
                 </Border>
                 <TextBlock x:Name="RotateSelectedFileLabel" FontSize="12" Margin="0,0,0,3"/>
                 <TextBox x:Name="RotatePdfInputText" Margin="0,0,0,10" IsReadOnly="True"/>
@@ -464,7 +453,139 @@
         </Border>
       </TabItem>
 
-      <!-- 6. Settings (Accessible via tab or top-right Settings button) -->
+      <!-- 6. Watermark PDF (New in v1.4.1) -->
+      <TabItem x:Name="WatermarkPdfTab">
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Path Width="14" Height="14" Stretch="Uniform" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" Margin="0,0,7,0" VerticalAlignment="Center" Data="{StaticResource IconWatermarkGeometry}"/>
+            <TextBlock x:Name="WatermarkPdfTabHeader" VerticalAlignment="Center"/>
+          </StackPanel>
+        </TabItem.Header>
+        <Border Style="{StaticResource Panel}" Margin="0,10,0,0">
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="380"/></Grid.ColumnDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,16,0">
+              <StackPanel>
+                <TextBlock x:Name="WatermarkPdfTitle" FontSize="20" FontWeight="SemiBold"/>
+                <TextBlock x:Name="WatermarkPdfHint" Margin="0,3,0,10" Foreground="{DynamicResource MutedBrush}" FontSize="12"/>
+                <Border Style="{StaticResource SquareDropZone}" Drop="WatermarkPdf_Drop" DragOver="Files_DragOver" MouseLeftButtonUp="PickWatermarkPdf_Click" Margin="0,0,0,10">
+                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Width="26" Height="26" Stretch="Uniform" Fill="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,0,0,5" Data="{StaticResource IconWatermarkGeometry}"/>
+                    <TextBlock x:Name="DropWatermarkPdfText" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <Button x:Name="PickWatermarkPdfButton" Margin="0,6,0,0" Padding="14,5" Click="PickWatermarkPdf_Click" HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Border>
+                <TextBlock x:Name="WatermarkSelectedFileLabel" FontSize="12" Margin="0,0,0,3"/>
+                <TextBox x:Name="WatermarkPdfInputText" Margin="0,0,0,10" IsReadOnly="True"/>
+
+                <!-- Watermark Settings -->
+                <Border Background="{DynamicResource InputBrush}" CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
+                  <StackPanel>
+                    <TextBlock x:Name="WatermarkTextLabel" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="WatermarkTextInput" Text="สำเนาถูกต้อง" Margin="0,0,0,6" TextChanged="WatermarkConfig_Changed"/>
+                    <!-- Preset chips -->
+                    <WrapPanel Margin="0,0,0,10">
+                      <Button Content="สำเนาถูกต้อง" Margin="0,0,6,4" Padding="8,3" FontSize="11" Click="WatermarkPreset_Click"/>
+                      <Button Content="ใช้สำหรับติดต่อราชการเท่านั้น" Margin="0,0,6,4" Padding="8,3" FontSize="11" Click="WatermarkPreset_Click"/>
+                      <Button Content="DRAFT" Margin="0,0,6,4" Padding="8,3" FontSize="11" Click="WatermarkPreset_Click"/>
+                      <Button Content="CONFIDENTIAL" Margin="0,0,6,4" Padding="8,3" FontSize="11" Click="WatermarkPreset_Click"/>
+                      <Button Content="SAMPLE" Margin="0,0,6,4" Padding="8,3" FontSize="11" Click="WatermarkPreset_Click"/>
+                    </WrapPanel>
+
+                    <!-- Styling Grid: Font Size, Opacity, Angle, Color -->
+                    <Grid Margin="0,0,0,8">
+                      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                      <StackPanel Margin="0,0,8,0">
+                        <DockPanel Margin="0,0,0,3">
+                          <TextBlock x:Name="WatermarkFontSizeLabel" FontSize="12" FontWeight="SemiBold"/>
+                          <TextBlock x:Name="WatermarkFontSizeValue" HorizontalAlignment="Right" FontSize="12" Text="48 pt" Foreground="{DynamicResource MutedBrush}"/>
+                        </DockPanel>
+                        <Slider x:Name="WatermarkFontSizeSlider" Minimum="12" Maximum="120" Value="48" SmallChange="2" LargeChange="10" ValueChanged="WatermarkConfig_Changed"/>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <DockPanel Margin="0,0,0,3">
+                          <TextBlock x:Name="WatermarkOpacityLabel" FontSize="12" FontWeight="SemiBold"/>
+                          <TextBlock x:Name="WatermarkOpacityValue" HorizontalAlignment="Right" FontSize="12" Text="30%" Foreground="{DynamicResource MutedBrush}"/>
+                        </DockPanel>
+                        <Slider x:Name="WatermarkOpacitySlider" Minimum="5" Maximum="100" Value="30" SmallChange="5" LargeChange="10" ValueChanged="WatermarkConfig_Changed"/>
+                      </StackPanel>
+                    </Grid>
+
+                    <!-- Angle & Color -->
+                    <Grid Margin="0,0,0,8">
+                      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                      <StackPanel Margin="0,0,8,0">
+                        <TextBlock x:Name="WatermarkAngleLabel" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <StackPanel Orientation="Horizontal">
+                          <RadioButton x:Name="WatermarkAngle45" IsChecked="True" Content="45° (ทแยง)" Margin="0,0,10,0" Foreground="{DynamicResource TextBrush}" Checked="WatermarkConfig_Changed"/>
+                          <RadioButton x:Name="WatermarkAngle0" Content="0° (นอน)" Margin="0,0,10,0" Foreground="{DynamicResource TextBrush}" Checked="WatermarkConfig_Changed"/>
+                          <RadioButton x:Name="WatermarkAngle90" Content="90° (ตั้ง)" Foreground="{DynamicResource TextBrush}" Checked="WatermarkConfig_Changed"/>
+                        </StackPanel>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock x:Name="WatermarkColorLabel" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <StackPanel Orientation="Horizontal">
+                          <RadioButton x:Name="WatermarkColorGray" IsChecked="True" Content="เทา" Margin="0,0,12,0" Foreground="{DynamicResource TextBrush}" Checked="WatermarkConfig_Changed"/>
+                          <RadioButton x:Name="WatermarkColorRed" Content="แดง" Margin="0,0,12,0" Foreground="{DynamicResource TextBrush}" Checked="WatermarkConfig_Changed"/>
+                          <RadioButton x:Name="WatermarkColorBlue" Content="น้ำเงิน" Foreground="{DynamicResource TextBrush}" Checked="WatermarkConfig_Changed"/>
+                        </StackPanel>
+                      </StackPanel>
+                    </Grid>
+
+                    <!-- Scope: All pages, Odd, Even, Custom -->
+                    <TextBlock x:Name="WatermarkScopeLabel" FontSize="12" FontWeight="SemiBold" Margin="0,4,0,4"/>
+                    <WrapPanel Orientation="Horizontal">
+                      <RadioButton x:Name="WatermarkAllPagesOption" IsChecked="True" Margin="0,0,14,4" Foreground="{DynamicResource TextBrush}" Checked="WatermarkScope_Changed"/>
+                      <RadioButton x:Name="WatermarkOddPagesOption" Margin="0,0,14,4" Foreground="{DynamicResource TextBrush}" Checked="WatermarkScope_Changed"/>
+                      <RadioButton x:Name="WatermarkEvenPagesOption" Margin="0,0,14,4" Foreground="{DynamicResource TextBrush}" Checked="WatermarkScope_Changed"/>
+                      <RadioButton x:Name="WatermarkCustomPagesOption" Margin="0,0,14,4" Foreground="{DynamicResource TextBrush}" Checked="WatermarkScope_Changed"/>
+                    </WrapPanel>
+                    <StackPanel x:Name="WatermarkCustomRangePanel" Visibility="Collapsed" Margin="0,4,0,0">
+                      <TextBlock x:Name="WatermarkCustomRangeLabel" FontSize="12"/>
+                      <TextBox x:Name="WatermarkCustomRangeText" Margin="0,3,0,0" Text="1, 3-5"/>
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+
+                <!-- Output Folder -->
+                <TextBlock x:Name="WatermarkOutputLabel" FontSize="12" Margin="0,0,0,3"/>
+                <DockPanel Margin="0,0,0,12">
+                  <Button x:Name="PickWatermarkOutputButton" DockPanel.Dock="Right" Click="PickWatermarkOutput_Click"/>
+                  <TextBox x:Name="WatermarkOutputText" IsReadOnly="True"/>
+                </DockPanel>
+
+                <Button x:Name="StartWatermarkButton" HorizontalAlignment="Left" Style="{StaticResource PrimaryButton}" Padding="20,9" Click="StartWatermark_Click"/>
+              </StackPanel>
+            </ScrollViewer>
+            <Border Grid.Column="1" Background="{DynamicResource DropBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10">
+              <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6">
+                  <Button x:Name="WatermarkPrevPageButton" Content="◀" Padding="7,3" Click="WatermarkPrevPage_Click"/>
+                  <TextBlock x:Name="WatermarkPageIndicator" VerticalAlignment="Center" Margin="8,0" Text="0 / 0" Foreground="{DynamicResource MutedBrush}"/>
+                  <Button x:Name="WatermarkNextPageButton" Content="▶" Padding="7,3" Click="WatermarkNextPage_Click"/>
+                </StackPanel>
+                <ScrollViewer Grid.Row="1" Tag="{Binding ElementName=WatermarkZoomSlider}" PreviewMouseWheel="Preview_MouseWheel" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                  <Grid>
+                    <Image x:Name="WatermarkPreviewImage" Stretch="Uniform" MaxWidth="350" MaxHeight="520">
+                      <Image.LayoutTransform><ScaleTransform ScaleX="{Binding ElementName=WatermarkZoomSlider, Path=Value}" ScaleY="{Binding ElementName=WatermarkZoomSlider, Path=Value}"/></Image.LayoutTransform>
+                    </Image>
+                    <TextBlock x:Name="WatermarkPreviewEmpty" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource MutedBrush}"/>
+                  </Grid>
+                </ScrollViewer>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                  <Button Content="−" Padding="9,4" Tag="{Binding ElementName=WatermarkZoomSlider}" Click="ZoomOut_Click"/>
+                  <Slider x:Name="WatermarkZoomSlider" Width="120" Minimum="0.5" Maximum="4" Value="1" SmallChange="0.1" Margin="4,0,10,0"/>
+                  <Button Content="+" Padding="9,4" Tag="{Binding ElementName=WatermarkZoomSlider}" Click="ZoomIn_Click"/>
+                  <TextBlock Width="42" VerticalAlignment="Center" Text="{Binding ElementName=WatermarkZoomSlider, Path=Value, StringFormat={}{0:P0}}"/>
+                </StackPanel>
+              </Grid>
+            </Border>
+          </Grid>
+        </Border>
+      </TabItem>
+
+      <!-- 7. Settings (Accessible via tab or top-right Settings button) -->
       <TabItem x:Name="SettingsTab">
         <TabItem.Header>
           <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

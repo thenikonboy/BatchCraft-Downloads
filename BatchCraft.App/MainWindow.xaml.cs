@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BatchCraft.App.Services;
 using PDFtoImage;
+using PdfSharp.Drawing;
 using Forms = System.Windows.Forms;
 
 namespace BatchCraft.App;
@@ -38,8 +39,13 @@ public partial class MainWindow : Window
     private int rotatePdfPage;
     private int rotatePdfTotalPages;
 
+    private string? watermarkPdfPath;
+    private int watermarkPdfPage;
+    private int watermarkPdfTotalPages;
+
     private PdfToolService PdfTools => pdfTools ??= new PdfToolService();
     private bool IsThai => settings.Language == "th";
+    public ObservableCollection<string> PdfToImagesFiles { get; } = [];
     public ObservableCollection<string> ImageFiles { get; } = [];
     public ObservableCollection<string> PdfFiles { get; } = [];
 
@@ -50,6 +56,7 @@ public partial class MainWindow : Window
         if (settings.Theme is not ("dark" or "light")) settings.Theme = "dark";
         InitializeComponent();
         SetDisplayedProductVersion();
+        PdfToImagesList.ItemsSource = PdfToImagesFiles;
         ImageList.ItemsSource = ImageFiles;
         PdfList.ItemsSource = PdfFiles;
         ApplyTheme();
@@ -81,20 +88,23 @@ public partial class MainWindow : Window
         MergePdfTabHeader.Text = T("รวม PDF", "Merge PDF");
         SplitPdfTabHeader.Text = T("แยก PDF", "Split PDF");
         RotatePdfTabHeader.Text = T("หมุน PDF", "Rotate PDF");
+        WatermarkPdfTabHeader.Text = T("ใส่ลายน้ำ", "Watermark");
         SettingsTabHeader.Text = T("ตั้งค่า", "Settings");
         AboutTabHeader.Text = T("เกี่ยวกับ", "About");
 
         // 1. PDF -> Images
-        PdfToImagesTitle.Text = T("แปลงทุกหน้า PDF เป็นรูปภาพ", "Convert every PDF page to images");
-        PdfToImagesHint.Text = T("ลาก PDF มาวาง หรือกดเลือกไฟล์", "Drop a PDF here or select a file");
-        DropPdfText.Text = T("วางไฟล์ PDF ที่นี่", "Drop a PDF here");
+        PdfToImagesTitle.Text = T("แปลงหน้า PDF เป็นรูปภาพ", "Convert PDF pages to images");
+        PdfToImagesHint.Text = T("ลาก PDF มาวางหลายไฟล์ได้ หรือกดเลือกไฟล์", "Drop one or multiple PDFs here or select files");
+        DropPdfText.Text = T("วางไฟล์ PDF ที่นี่ (รองรับหลายไฟล์)", "Drop PDF files here (multiple supported)");
         PickPdfButton.Content = T("เลือก PDF", "Select PDF");
-        SelectedFileLabel.Text = T("ไฟล์ที่เลือก", "Selected file");
+        AddMorePdfsButton.Content = T("เพิ่มไฟล์ PDF…", "Add PDFs…");
+        RemovePdfItemButton.Content = T("ลบที่เลือก", "Remove");
+        ClearPdfItemsButton.Content = T("ล้างทั้งหมด", "Clear all");
         ImageOutputLabel.Text = T("โฟลเดอร์เก็บรูป", "Image output folder");
         PickImageOutputButton.Content = T("เลือกโฟลเดอร์…", "Select folder…");
         PngOption.Content = T("PNG (คมชัด)", "PNG (high quality)");
-        JpegOption.Content = T("JPEG (ไฟล์เล็ก)", "JPEG (smaller files)");
-        ConvertPdfButton.Content = T("เริ่มแปลง PDF", "Convert PDF");
+        JpegOption.Content = T("JPG (ไฟล์เล็ก)", "JPG (smaller files)");
+        ConvertPdfButton.Content = T("เริ่มแปลง PDF เป็นรูปภาพ", "Convert PDF to images");
         PdfPreviewEmpty.Text = T("เลือก PDF เพื่อดู\nตัวอย่างหน้า", "Select a PDF to preview\npages");
 
         // 2. Images -> PDF
@@ -146,6 +156,34 @@ public partial class MainWindow : Window
         StartRotateButton.Content = T("บันทึก PDF ที่หมุนแล้ว", "Save rotated PDF");
         RotatePreviewEmpty.Text = T("เลือก PDF เพื่อดู\nตัวอย่างหน้า", "Select a PDF to preview\npages");
 
+        // 6. Watermark PDF (New in v1.4.1)
+        WatermarkPdfTitle.Text = T("ใส่ลายน้ำบนเอกสาร PDF", "Add watermark to PDF documents");
+        WatermarkPdfHint.Text = T("ใส่ข้อความลายน้ำ กำหนดขนาด ความจาง สี และมุมเอียงได้ตามต้องการ", "Add watermark text with custom size, opacity, color, and angle");
+        DropWatermarkPdfText.Text = T("วางไฟล์ PDF ที่นี่", "Drop a PDF here");
+        PickWatermarkPdfButton.Content = T("เลือก PDF", "Select PDF");
+        WatermarkSelectedFileLabel.Text = T("ไฟล์ที่เลือก", "Selected file");
+        WatermarkTextLabel.Text = T("ข้อความลายน้ำ", "Watermark text");
+        WatermarkFontSizeLabel.Text = T("ขนาดตัวอักษร", "Font size");
+        WatermarkOpacityLabel.Text = T("ความโปร่งแสง (จาง)", "Opacity");
+        WatermarkAngleLabel.Text = T("มุมเอียง", "Angle");
+        WatermarkAngle45.Content = T("45° (ทแยง)", "45° (Diagonal)");
+        WatermarkAngle0.Content = T("0° (แนวนอน)", "0° (Horizontal)");
+        WatermarkAngle90.Content = T("90° (แนวตั้ง)", "90° (Vertical)");
+        WatermarkColorLabel.Text = T("สีข้อความ", "Color");
+        WatermarkColorGray.Content = T("เทา", "Gray");
+        WatermarkColorRed.Content = T("แดง", "Red");
+        WatermarkColorBlue.Content = T("น้ำเงิน", "Blue");
+        WatermarkScopeLabel.Text = T("หน้าที่ต้องการใส่ลายน้ำ", "Target pages");
+        WatermarkAllPagesOption.Content = T("ทุกหน้า", "All pages");
+        WatermarkOddPagesOption.Content = T("เฉพาะหน้าคี่ (1, 3, 5...)", "Odd pages (1, 3, 5...)");
+        WatermarkEvenPagesOption.Content = T("เฉพาะหน้าคู่ (2, 4, 6...)", "Even pages (2, 4, 6...)");
+        WatermarkCustomPagesOption.Content = T("หน้าที่กำหนด", "Custom pages");
+        WatermarkCustomRangeLabel.Text = T("หน้าที่ต้องการใส่ (เช่น 1, 3-5)", "Pages to watermark (e.g. 1, 3-5)");
+        WatermarkOutputLabel.Text = T("โฟลเดอร์ผลลัพธ์", "Output folder");
+        PickWatermarkOutputButton.Content = T("เลือกโฟลเดอร์…", "Select folder…");
+        StartWatermarkButton.Content = T("บันทึก PDF พร้อมลายน้ำ", "Save watermarked PDF");
+        WatermarkPreviewEmpty.Text = T("เลือก PDF เพื่อดู\nตัวอย่างหน้า", "Select a PDF to preview\npages");
+
         // Common Buttons
         RemoveImageButton.Content = RemovePdfButton.Content = T("ลบ", "Remove");
         ImageUpButton.Content = PdfUpButton.Content = T("↑ ขึ้น", "↑ Up");
@@ -168,7 +206,7 @@ public partial class MainWindow : Window
         // About
         AboutTitle.Text = T("เกี่ยวกับ BatchCraft", "About BatchCraft");
         AboutPurposeTitle.Text = T("จุดประสงค์", "Purpose");
-        AboutPurposeText.Text = T("BatchCraft สร้างขึ้นเพื่อให้ผู้ใช้ทั่วไปจัดการงาน PDF ประจำวันได้ง่าย รวดเร็ว และไม่ต้องส่งเอกสารขึ้นเว็บไซต์ภายนอก รองรับการแปลง PDF เป็นรูปภาพ รวมรูปเป็น PDF รวม PDF หลายไฟล์ แยกหน้า PDF และหมุนหน้า PDF", "BatchCraft helps everyday users complete common PDF tasks simply and quickly without uploading documents to external websites. It converts PDF pages to images, combines images into a PDF, merges multiple PDFs, splits PDFs, and rotates PDF pages.");
+        AboutPurposeText.Text = T("BatchCraft สร้างขึ้นเพื่อให้ผู้ใช้ทั่วไปจัดการงาน PDF ประจำวันได้ง่าย รวดเร็ว และไม่ต้องส่งเอกสารขึ้นเว็บไซต์ภายนอก รองรับการแปลง PDF เป็นรูปภาพ รวมรูปเป็น PDF รวม PDF หลายไฟล์ แยกหน้า PDF หมุนหน้า PDF และใส่ลายน้ำเอกสาร", "BatchCraft helps everyday users complete common PDF tasks simply and quickly without uploading documents to external websites. It converts PDF pages to images, combines images into a PDF, merges multiple PDFs, splits PDFs, rotates PDF pages, and adds watermarks to PDFs.");
         AboutPrivacyTitle.Text = T("ความเป็นส่วนตัว", "Privacy");
         AboutPrivacyText.Text = T("การแปลงไฟล์ทั้งหมดทำงานภายในเครื่อง โปรแกรมเชื่อมต่ออินเทอร์เน็ตเฉพาะเมื่อตรวจสอบอัปเดตจาก GitHub เท่านั้น", "All file processing happens locally. The app only connects to the internet when checking GitHub for updates.");
         ProjectPageButton.Content = T("เปิดหน้าโปรเจกต์", "Open project page");
@@ -231,24 +269,108 @@ public partial class MainWindow : Window
     }
     private void PickDefaultFolder_Click(object sender, RoutedEventArgs e) { var path = PickFolder(settings.DefaultOutputFolder); if (path is null) return; settings.DefaultOutputFolder = path; DefaultFolderText.Text = path; SaveSettings(); }
 
+    private enum DuplicateResolution { Overwrite, AutoRename, Cancel }
+
+    private DuplicateResolution CheckDuplicatePrompt(IReadOnlyList<string> potentialFiles)
+    {
+        var existing = potentialFiles.Where(File.Exists).ToList();
+        if (existing.Count == 0) return DuplicateResolution.Overwrite;
+
+        var message = T(
+            $"พบไฟล์ชื่อซ้ำกัน {existing.Count} ไฟล์ในโฟลเดอร์ปลายทาง\n\nตัวอย่าง: {Path.GetFileName(existing[0])}\n\nคุณต้องการบันทึกทับหรือไม่?\n• ใช่ (Yes) = บันทึกทับไฟล์เดิม\n• ไม่ใช่ (No) = เปลี่ยนชื่ออัตโนมัติ (เช่น (1))\n• ยกเลิก (Cancel) = ยกเลิกการทำงาน",
+            $"Found {existing.Count} duplicate file(s) in destination folder.\n\nExample: {Path.GetFileName(existing[0])}\n\nDo you want to overwrite?\n• Yes = Overwrite existing files\n• No = Auto-rename (e.g. (1))\n• Cancel = Cancel operation");
+
+        var result = System.Windows.MessageBox.Show(this, message, T("แจ้งเตือนไฟล์ชื่อซ้ำกัน", "Duplicate Files Warning"), MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+        return result switch
+        {
+            MessageBoxResult.Yes => DuplicateResolution.Overwrite,
+            MessageBoxResult.No => DuplicateResolution.AutoRename,
+            _ => DuplicateResolution.Cancel
+        };
+    }
+
     // 1. PDF -> Images
-    private void PickPdf_Click(object s, RoutedEventArgs e) { var files = PickFiles("PDF files (*.pdf)|*.pdf", false, settings.LastInputFolder); if (files.Length > 0) SetPdfInput(files[0]); }
+    private void PickPdf_Click(object s, RoutedEventArgs e) => AddPdfToImages(PickFiles("PDF files (*.pdf)|*.pdf", true, settings.LastInputFolder));
+    private void AddMorePdfs_Click(object s, RoutedEventArgs e) => AddPdfToImages(PickFiles("PDF files (*.pdf)|*.pdf", true, settings.LastInputFolder));
+    private void RemovePdfItem_Click(object s, RoutedEventArgs e) => RemoveSelected(PdfToImagesFiles, PdfToImagesList.SelectedItem as string);
+    private void ClearPdfItems_Click(object s, RoutedEventArgs e)
+    {
+        PdfToImagesFiles.Clear();
+        PdfPreviewImage.Source = null;
+        PdfPreviewEmpty.Visibility = Visibility.Visible;
+        PdfToImagesPageIndicator.Text = "0 / 0";
+        pdfToImagesPath = null;
+        pdfToImagesPage = 0;
+        pdfToImagesTotalPages = 0;
+    }
     private void PickImageOutput_Click(object s, RoutedEventArgs e) { var path = PickFolder(PreferredOutputFolder(ImageOutputText.Text)); if (path is null) return; ImageOutputText.Text = path; RememberOutputFolder(path); }
     private async void ConvertPdf_Click(object s, RoutedEventArgs e)
     {
-        if (!File.Exists(PdfInputText.Text) || !Directory.Exists(ImageOutputText.Text)) { ShowError(T("กรุณาเลือก PDF และโฟลเดอร์เก็บรูป", "Select a PDF and an image output folder.")); return; }
-        var outputFolder = ImageOutputText.Text;
-        await RunTool(async progress => { var count = await PdfTools.PdfToImagesAsync(PdfInputText.Text, outputFolder, JpegOption.IsChecked == true, progress); return new ToolResult(count, outputFolder); });
+        if (PdfToImagesFiles.Count == 0) { ShowError(T("กรุณาเพิ่มไฟล์ PDF อย่างน้อย 1 ไฟล์", "Please add at least one PDF file.")); return; }
+        var outputFolder = PreferredOutputFolder(ImageOutputText.Text);
+        if (string.IsNullOrWhiteSpace(outputFolder)) { ShowError(T("กรุณาเลือกโฟลเดอร์สำหรับบันทึกรูปภาพ", "Please select an output folder for images.")); return; }
+        Directory.CreateDirectory(outputFolder);
+
+        var isJpeg = JpegOption.IsChecked == true;
+        var ext = isJpeg ? "jpg" : "png";
+        var potentialFiles = new List<string>();
+        foreach (var pdf in PdfToImagesFiles)
+        {
+            var baseName = Path.GetFileNameWithoutExtension(pdf);
+            potentialFiles.Add(Path.Combine(outputFolder, $"{baseName}-page-001.{ext}"));
+        }
+
+        var resolution = CheckDuplicatePrompt(potentialFiles);
+        if (resolution == DuplicateResolution.Cancel) return;
+
+        Func<string, string>? resolver = resolution == DuplicateResolution.AutoRename
+            ? PdfToolService.GetNonConflictingPath
+            : null;
+
+        await RunTool(async progress =>
+        {
+            var count = await PdfTools.MultiplePdfsToImagesAsync(PdfToImagesFiles.ToList(), outputFolder, isJpeg, resolver, progress);
+            return new ToolResult(count, outputFolder);
+        });
     }
-    private void PdfInput_Drop(object sender, System.Windows.DragEventArgs e) { var pdf = DroppedFiles(e).FirstOrDefault(IsPdf); if (pdf is null) { ShowError(T("พื้นที่นี้รับเฉพาะไฟล์ PDF", "Only PDF files are accepted here.")); return; } SetPdfInput(pdf); GlobalStatus.Text = T("รับไฟล์ PDF แล้ว พร้อมแปลง", "PDF ready to convert"); }
-    private void SetPdfInput(string file)
+    private void PdfInput_Drop(object sender, System.Windows.DragEventArgs e)
     {
-        PdfInputText.Text = file;
-        RememberInputFolder(file);
-        ImageOutputText.Text = PreferredOutputFolder(Path.GetDirectoryName(file));
+        var pdfs = DroppedFiles(e).Where(IsPdf).ToList();
+        if (pdfs.Count == 0) { ShowError(T("พื้นที่นี้รับเฉพาะไฟล์ PDF", "Only PDF files are accepted here.")); return; }
+        AddPdfToImages(pdfs);
+    }
+    private void AddPdfToImages(IEnumerable<string> files)
+    {
+        var accepted = files.Where(IsPdf).ToList();
+        foreach (var file in accepted)
+        {
+            if (!PdfToImagesFiles.Contains(file, StringComparer.OrdinalIgnoreCase))
+                PdfToImagesFiles.Add(file);
+        }
+        if (accepted.Count > 0)
+        {
+            RememberInputFolder(accepted[0]);
+            if (string.IsNullOrEmpty(ImageOutputText.Text))
+                ImageOutputText.Text = PreferredOutputFolder(Path.GetDirectoryName(accepted[0]));
+            PdfToImagesList.SelectedItem ??= accepted[0];
+        }
+        GlobalStatus.Text = accepted.Count > 0
+            ? T($"เพิ่มไฟล์ PDF แล้ว {accepted.Count} ไฟล์ (รวม {PdfToImagesFiles.Count} ไฟล์)", $"Added {accepted.Count} PDF(s) (Total {PdfToImagesFiles.Count})")
+            : T("ไม่พบไฟล์ PDF", "No PDF files found");
+    }
+    private async void PdfToImagesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (PdfToImagesList.SelectedItem is not string file || !File.Exists(file))
+        {
+            PdfPreviewImage.Source = null;
+            PdfPreviewEmpty.Visibility = Visibility.Visible;
+            PdfToImagesPageIndicator.Text = "0 / 0";
+            pdfToImagesPath = null;
+            return;
+        }
         pdfToImagesPath = file;
         pdfToImagesPage = 0;
-        _ = LoadPdfPreviewAsync(file, pdfToImagesPage, PdfPreviewImage, PdfPreviewEmpty, PdfToImagesPageIndicator, (p, t) => { pdfToImagesPage = p; pdfToImagesTotalPages = t; });
+        await LoadPdfPreviewAsync(file, pdfToImagesPage, PdfPreviewImage, PdfPreviewEmpty, PdfToImagesPageIndicator, (p, t) => { pdfToImagesPage = p; pdfToImagesTotalPages = t; });
     }
     private async void PdfToImagesPrevPage_Click(object sender, RoutedEventArgs e)
     {
@@ -367,9 +489,15 @@ public partial class MainWindow : Window
         {
             var outputFolder = PreferredOutputFolder(SplitOutputText.Text);
             if (!Directory.Exists(outputFolder)) { ShowError(T("กรุณาเลือกโฟลเดอร์ผลลัพธ์", "Please select an output folder.")); return; }
+            var baseName = Path.GetFileNameWithoutExtension(inputPdf);
+            var checkFile = Path.Combine(outputFolder, $"{baseName}-page-001.pdf");
+            var resolution = CheckDuplicatePrompt([checkFile]);
+            if (resolution == DuplicateResolution.Cancel) return;
+            Func<string, string>? resolver = resolution == DuplicateResolution.AutoRename ? PdfToolService.GetNonConflictingPath : null;
+
             await RunTool(async progress =>
             {
-                var count = await PdfTools.SplitPdfAllPagesAsync(inputPdf, outputFolder, progress);
+                var count = await PdfTools.SplitPdfAllPagesAsync(inputPdf, outputFolder, resolver, progress);
                 return new ToolResult(count, outputFolder);
             });
         }
@@ -471,6 +599,119 @@ public partial class MainWindow : Window
         if (rotatePdfTotalPages <= 1 || rotatePdfPage >= rotatePdfTotalPages - 1) return;
         rotatePdfPage++;
         await LoadPdfPreviewAsync(rotatePdfPath, rotatePdfPage, RotatePreviewImage, RotatePreviewEmpty, RotatePageIndicator, (p, t) => { rotatePdfPage = p; rotatePdfTotalPages = t; });
+    }
+
+    // 6. Watermark PDF (New in v1.4.1)
+    private double GetSelectedWatermarkAngle()
+    {
+        if (WatermarkAngle0.IsChecked == true) return 0;
+        if (WatermarkAngle90.IsChecked == true) return 90;
+        return 45;
+    }
+    private XColor GetSelectedWatermarkColor()
+    {
+        if (WatermarkColorRed.IsChecked == true) return XColors.Crimson;
+        if (WatermarkColorBlue.IsChecked == true) return XColors.DodgerBlue;
+        return XColors.Gray;
+    }
+    private RotationPageScope GetSelectedWatermarkScope()
+    {
+        if (WatermarkOddPagesOption.IsChecked == true) return RotationPageScope.Odd;
+        if (WatermarkEvenPagesOption.IsChecked == true) return RotationPageScope.Even;
+        if (WatermarkCustomPagesOption.IsChecked == true) return RotationPageScope.Custom;
+        return RotationPageScope.All;
+    }
+    private void WatermarkPreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.Button btn && btn.Content is string text)
+            WatermarkTextInput.Text = text;
+    }
+    private void WatermarkConfig_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!IsInitialized) return;
+        if (WatermarkFontSizeValue != null && WatermarkFontSizeSlider != null)
+            WatermarkFontSizeValue.Text = $"{(int)WatermarkFontSizeSlider.Value} pt";
+        if (WatermarkOpacityValue != null && WatermarkOpacitySlider != null)
+            WatermarkOpacityValue.Text = $"{(int)WatermarkOpacitySlider.Value}%";
+    }
+    private void WatermarkScope_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!IsInitialized) return;
+        WatermarkCustomRangePanel.Visibility = WatermarkCustomPagesOption.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+    }
+    private void PickWatermarkPdf_Click(object s, RoutedEventArgs e)
+    {
+        var files = PickFiles("PDF files (*.pdf)|*.pdf", false, settings.LastInputFolder);
+        if (files.Length > 0) SetWatermarkPdfInput(files[0]);
+    }
+    private void WatermarkPdf_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var pdf = DroppedFiles(e).FirstOrDefault(IsPdf);
+        if (pdf is null) { ShowError(T("พื้นที่นี้รับเฉพาะไฟล์ PDF", "Only PDF files are accepted here.")); return; }
+        SetWatermarkPdfInput(pdf);
+        GlobalStatus.Text = T("รับไฟล์ PDF แล้ว พร้อมใส่ลายน้ำ", "PDF ready for watermark");
+    }
+    private void SetWatermarkPdfInput(string file)
+    {
+        WatermarkPdfInputText.Text = file;
+        RememberInputFolder(file);
+        WatermarkOutputText.Text = PreferredOutputFolder(Path.GetDirectoryName(file));
+        watermarkPdfPath = file;
+        watermarkPdfPage = 0;
+        _ = LoadPdfPreviewAsync(file, watermarkPdfPage, WatermarkPreviewImage, WatermarkPreviewEmpty, WatermarkPageIndicator, (p, t) => { watermarkPdfPage = p; watermarkPdfTotalPages = t; });
+    }
+    private void PickWatermarkOutput_Click(object s, RoutedEventArgs e)
+    {
+        var path = PickFolder(PreferredOutputFolder(WatermarkOutputText.Text));
+        if (path is null) return;
+        WatermarkOutputText.Text = path;
+        RememberOutputFolder(path);
+    }
+    private async void StartWatermark_Click(object sender, RoutedEventArgs e)
+    {
+        var inputPdf = WatermarkPdfInputText.Text;
+        if (!File.Exists(inputPdf)) { ShowError(T("กรุณาเลือกไฟล์ PDF ก่อน", "Please select a PDF file first.")); return; }
+        var watermarkText = WatermarkTextInput.Text.Trim();
+        if (string.IsNullOrWhiteSpace(watermarkText)) { ShowError(T("กรุณากรอกข้อความลายน้ำ", "Please enter watermark text.")); return; }
+
+        var outputFolder = PreferredOutputFolder(WatermarkOutputText.Text);
+        if (!Directory.Exists(outputFolder)) { ShowError(T("กรุณาเลือกโฟลเดอร์ผลลัพธ์", "Please select an output folder.")); return; }
+
+        var defaultName = $"{Path.GetFileNameWithoutExtension(inputPdf)}-watermarked.pdf";
+        var outputPdf = Path.Combine(outputFolder, defaultName);
+
+        if (File.Exists(outputPdf))
+        {
+            var res = CheckDuplicatePrompt([outputPdf]);
+            if (res == DuplicateResolution.Cancel) return;
+            if (res == DuplicateResolution.AutoRename)
+                outputPdf = PdfToolService.GetNonConflictingPath(outputPdf);
+        }
+
+        var fontSize = WatermarkFontSizeSlider.Value;
+        var opacity = WatermarkOpacitySlider.Value / 100.0;
+        var angle = GetSelectedWatermarkAngle();
+        var color = GetSelectedWatermarkColor();
+        var scope = GetSelectedWatermarkScope();
+        var custom = WatermarkCustomRangeText.Text.Trim();
+
+        await RunTool(async progress =>
+        {
+            var count = await PdfTools.WatermarkPdfAsync(inputPdf, outputPdf, watermarkText, fontSize, opacity, angle, color, scope, custom, progress);
+            return new ToolResult(count, Path.GetDirectoryName(outputPdf)!);
+        });
+    }
+    private async void WatermarkPrevPage_Click(object sender, RoutedEventArgs e)
+    {
+        if (watermarkPdfTotalPages <= 1 || watermarkPdfPage <= 0) return;
+        watermarkPdfPage--;
+        await LoadPdfPreviewAsync(watermarkPdfPath, watermarkPdfPage, WatermarkPreviewImage, WatermarkPreviewEmpty, WatermarkPageIndicator, (p, t) => { watermarkPdfPage = p; watermarkPdfTotalPages = t; });
+    }
+    private async void WatermarkNextPage_Click(object sender, RoutedEventArgs e)
+    {
+        if (watermarkPdfTotalPages <= 1 || watermarkPdfPage >= watermarkPdfTotalPages - 1) return;
+        watermarkPdfPage++;
+        await LoadPdfPreviewAsync(watermarkPdfPath, watermarkPdfPage, WatermarkPreviewImage, WatermarkPreviewEmpty, WatermarkPageIndicator, (p, t) => { watermarkPdfPage = p; watermarkPdfTotalPages = t; });
     }
 
     // Preview and Helper Methods

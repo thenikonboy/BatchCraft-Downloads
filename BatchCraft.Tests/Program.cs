@@ -15,7 +15,7 @@ Assert(File.Exists(file), "valid SHA-256 accepted");
 Throws<InvalidDataException>(() => UpdateService.ValidateDigest(null), "missing digest rejected");
 Throws<InvalidDataException>(() => UpdateService.ValidateDigest("sha256:1234"), "short digest rejected");
 
-var releaseJson = $$"""{"tag_name":"v1.4.2","html_url":"https://example.test/release","assets":[{"name":"BatchCraft-Setup-v1.4.2-win-x64.exe","browser_download_url":"https://example.test/setup.exe","digest":"sha256:{{new string('a', 64)}}"},{"name":"BatchCraft-v1.4.2-win-x64.zip","browser_download_url":"https://example.test/portable.zip","digest":"sha256:{{new string('b', 64)}}"}]}""";
+var releaseJson = $$"""{"tag_name":"v9.9.0","html_url":"https://example.test/release","assets":[{"name":"BatchCraft-Setup-v9.9.0-win-x64.exe","browser_download_url":"https://example.test/setup.exe","digest":"sha256:{{new string('a', 64)}}"},{"name":"BatchCraft-v9.9.0-win-x64.zip","browser_download_url":"https://example.test/portable.zip","digest":"sha256:{{new string('b', 64)}}"}]}""";
 var uninstallerMarker = Path.Combine(AppContext.BaseDirectory, "unins000.exe");
 try
 {
@@ -68,6 +68,23 @@ try
     var rotateCount = await service.RotatePdfAsync(merged, rotatedPdf, 90, RotationPageScope.Odd);
     using var rotateDoc = PdfSharp.Pdf.IO.PdfReader.Open(rotatedPdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
     Assert(rotateCount == 4 && rotateDoc.Pages[0].Rotate == 90 && rotateDoc.Pages[1].Rotate == 0, "rotate PDF odd pages by 90 degrees");
+
+    // Test Multiple PDFs to JPG
+    var multiJpgFolder = Path.Combine(work, "multi_jpg");
+    var multiJpgCount = await service.MultiplePdfsToImagesAsync([pdf, rotatedPdf], multiJpgFolder, true);
+    Assert(multiJpgCount == 6 && Directory.GetFiles(multiJpgFolder, "*.jpg").Length == 6, "convert multiple PDFs to JPG");
+
+    // Test Watermark PDF
+    var watermarkedPdf = Path.Combine(work, "watermarked.pdf");
+    var wmCount = await service.WatermarkPdfAsync(merged, watermarkedPdf, "สำเนาถูกต้อง", 48, 0.3, 45, PdfSharp.Drawing.XColors.Red, RotationPageScope.All);
+    using var wmDoc = PdfSharp.Pdf.IO.PdfReader.Open(watermarkedPdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+    Assert(wmCount == 4 && wmDoc.PageCount == 4, "apply watermark with Thai text to PDF");
+
+    // Test GetNonConflictingPath (duplicate prevention)
+    var testDupPath = Path.Combine(work, "dup_test.txt");
+    await File.WriteAllTextAsync(testDupPath, "first");
+    var nonConflicting = PdfToolService.GetNonConflictingPath(testDupPath);
+    Assert(nonConflicting.EndsWith("dup_test (1).txt"), "auto-rename duplicate filename");
 }
 finally { try { Directory.Delete(work, true); } catch { } }
 

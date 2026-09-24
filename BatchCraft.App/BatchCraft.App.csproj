@@ -9,7 +9,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Assets\BatchCraft.ico</ApplicationIcon>
     <AssemblyName>BatchCraft</AssemblyName>
-    <Version>1.4.1</Version>
+    <Version>1.4.2</Version>
     <PublishReadyToRun>true</PublishReadyToRun>
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>all</NuGetAuditMode>

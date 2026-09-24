@@ -15,7 +15,7 @@ public sealed class UpdateService
     public UpdateService(HttpClient? client = null)
     {
         this.client = client ?? new HttpClient();
-        if (!this.client.DefaultRequestHeaders.UserAgent.Any()) this.client.DefaultRequestHeaders.UserAgent.ParseAdd("BatchCraft-Updater/1.4.1");
+        if (!this.client.DefaultRequestHeaders.UserAgent.Any()) this.client.DefaultRequestHeaders.UserAgent.ParseAdd("BatchCraft-Updater/1.4.2");
         this.client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
     }
 
