@@ -9,11 +9,17 @@ namespace BatchCraft.App.Services;
 
 public sealed class UpdateService
 {
-    internal const string LatestReleaseApi = "https://api.github.com/repos/thenikonboy/BatchCraft-Downloads/releases/latest";
+    internal const string LatestReleaseApi = "https://api.github.com/repos/nikonboy2532-stack/BatchCraft-Downloads/releases/latest";
+    internal static readonly string[] ReleaseApiEndpoints = [
+        "https://api.github.com/repos/nikonboy2532-stack/BatchCraft-Downloads/releases/latest",
+        "https://api.github.com/repos/thenikonboy/BatchCraft-Downloads/releases/latest"
+    ];
     private readonly HttpClient client;
+    private readonly bool isCustomClient;
 
     public UpdateService(HttpClient? client = null)
     {
+        isCustomClient = client != null;
         this.client = client ?? new HttpClient();
         if (!this.client.DefaultRequestHeaders.UserAgent.Any()) this.client.DefaultRequestHeaders.UserAgent.ParseAdd("BatchCraft-Updater/1.4.2");
         this.client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
@@ -22,29 +28,48 @@ public sealed class UpdateService
     public async Task<UpdateInfo?> CheckAsync(CancellationToken cancellationToken = default)
     {
         CleanupOldUpdates();
-        using var response = await client.GetAsync(LatestReleaseApi, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-        var root = json.RootElement;
-        var tag = root.GetProperty("tag_name").GetString() ?? "";
-        if (!Version.TryParse(tag.TrimStart('v', 'V'), out var latest)) return null;
-        var current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0);
-        if (latest <= current) return null;
-        var kind = IsInstalledBuild() ? UpdatePackageKind.Installer : UpdatePackageKind.Portable;
-        var prefix = kind == UpdatePackageKind.Installer ? "BatchCraft-Setup-" : "BatchCraft-v";
-        var suffix = kind == UpdatePackageKind.Installer ? "-win-x64.exe" : "-win-x64.zip";
-        foreach (var asset in root.GetProperty("assets").EnumerateArray())
+        JsonDocument? json = null;
+        var endpoints = isCustomClient ? [LatestReleaseApi] : ReleaseApiEndpoints;
+        foreach (var endpoint in endpoints)
         {
-            var name = asset.GetProperty("name").GetString() ?? "";
-            if (!name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || !name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) continue;
-            var digest = asset.TryGetProperty("digest", out var node) ? node.GetString() : null;
-            ValidateDigest(digest);
-            return new UpdateInfo(latest, tag, name,
-                asset.GetProperty("browser_download_url").GetString() ?? throw new InvalidDataException("Release URL missing."),
-                digest!, root.GetProperty("html_url").GetString() ?? "", kind);
+            try
+            {
+                using var response = await client.GetAsync(endpoint, cancellationToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                    json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+                    break;
+                }
+            }
+            catch when (!cancellationToken.IsCancellationRequested)
+            {
+                // Fall back to next endpoint
+            }
         }
-        throw new InvalidDataException(kind == UpdatePackageKind.Installer ? "The release does not contain a Windows installer." : "The release does not contain a portable Windows package.");
+        if (json is null) return null;
+        using (json)
+        {
+            var root = json.RootElement;
+            var tag = root.GetProperty("tag_name").GetString() ?? "";
+            if (!Version.TryParse(tag.TrimStart('v', 'V'), out var latest)) return null;
+            var current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0);
+            if (latest <= current) return null;
+            var kind = IsInstalledBuild() ? UpdatePackageKind.Installer : UpdatePackageKind.Portable;
+            var prefix = kind == UpdatePackageKind.Installer ? "BatchCraft-Setup-" : "BatchCraft-v";
+            var suffix = kind == UpdatePackageKind.Installer ? "-win-x64.exe" : "-win-x64.zip";
+            foreach (var asset in root.GetProperty("assets").EnumerateArray())
+            {
+                var name = asset.GetProperty("name").GetString() ?? "";
+                if (!name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || !name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) continue;
+                var digest = asset.TryGetProperty("digest", out var node) ? node.GetString() : null;
+                ValidateDigest(digest);
+                return new UpdateInfo(latest, tag, name,
+                    asset.GetProperty("browser_download_url").GetString() ?? throw new InvalidDataException("Release URL missing."),
+                    digest!, root.GetProperty("html_url").GetString() ?? "", kind);
+            }
+            throw new InvalidDataException(kind == UpdatePackageKind.Installer ? "The release does not contain a Windows installer." : "The release does not contain a portable Windows package.");
+        }
     }
 
     public async Task DownloadAndInstallAsync(UpdateInfo update, IProgress<int>? progress = null, CancellationToken cancellationToken = default)
