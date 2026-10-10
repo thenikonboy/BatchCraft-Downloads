@@ -79,7 +79,9 @@ public partial class MainWindow : Window
     {
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         VersionText.Text = $"v{version?.Major}.{version?.Minor}.{version?.Build}";
-        SubtitleText.Text = T("เครื่องมือ PDF ที่เรียบง่าย รวดเร็ว และเป็นส่วนตัว", "Simple, fast, and private PDF tools");
+        SubtitleText.Text = T("เครื่องมือจัดการ PDF ความเร็วสูง ออฟไลน์ ปลอดภัย 100%", "High-speed, offline & 100% private PDF utility suite");
+        PrivacyBadgeText.Text = T("ทำงานในเครื่อง 100% ออฟไลน์", "100% Local • No Cloud Upload");
+        EngineStatusText.Text = T("เอนจิน: PDFium v12.4 (ออฟไลน์ 100%)", "Engine: PDFium v12.4 (100% Offline)");
         SettingsButton.Content = T("⚙ ตั้งค่า", "⚙ Settings");
 
         // Tab Headers
@@ -222,11 +224,22 @@ public partial class MainWindow : Window
     private void ApplyTheme()
     {
         var dark = settings.Theme == "dark";
-        SetBrush("WindowBrush", dark ? "#111827" : "#F3F6FA"); SetBrush("PanelBrush", dark ? "#1F2937" : "#FFFFFF");
-        SetBrush("InputBrush", dark ? "#273449" : "#E9EEF5"); SetBrush("TextBrush", dark ? "#F3F4F6" : "#172033");
-        SetBrush("MutedBrush", dark ? "#AAB4C3" : "#637083"); SetBrush("BorderBrush", dark ? "#475569" : "#C7D2E0");
-        SetBrush("AccentBrush", "#3B82F6"); SetBrush("DropBrush", dark ? "#17233A" : "#EFF6FF");
-        SetBrush("StatusBrush", dark ? "#182438" : "#E6EDF9"); SetBrush("SuccessBrush", dark ? "#34D399" : "#059669");
+        SetBrush("WindowBrush", dark ? "#0B0F19" : "#F8FAFC");
+        SetBrush("PanelBrush", dark ? "#111827" : "#FFFFFF");
+        SetBrush("InputBrush", dark ? "#151F32" : "#F1F5F9");
+        SetBrush("TextBrush", dark ? "#F8FAFC" : "#0F172A");
+        SetBrush("MutedBrush", dark ? "#94A3B8" : "#64748B");
+        SetBrush("BorderBrush", dark ? "#1E293B" : "#CBD5E1");
+        SetBrush("AccentBrush", "#2563EB");
+        SetBrush("DropBrush", dark ? "#0F172A" : "#EFF6FF");
+        SetBrush("StatusBrush", dark ? "#0B1120" : "#F1F5F9");
+        SetBrush("SuccessBrush", dark ? "#10B981" : "#059669");
+        SetBrush("BadgeBgBrush", dark ? "#1E3A8A" : "#EFF6FF");
+        SetBrush("BadgeBorderBrush", dark ? "#3B82F6" : "#BFDBFE");
+        SetBrush("BadgeTextBrush", dark ? "#60A5FA" : "#1D4ED8");
+        SetBrush("PrivacyBgBrush", dark ? "#064E3B" : "#ECFDF5");
+        SetBrush("PrivacyBorderBrush", dark ? "#059669" : "#A7F3D0");
+        SetBrush("PrivacyTextBrush", dark ? "#34D399" : "#047857");
         UpdateChoiceButtons();
     }
 

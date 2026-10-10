@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BatchCraft 2.0 - Next-Gen PDF Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            surface: {
+              base: '#0B0F19',
+              card: '#111827',
+              panel: '#151F32',
+              border: '#1E293B',
+              hover: '#1F2E47',
+            }
+          },
+          fontFamily: {
+            sans: ['Prompt', 'Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    /* Custom refined scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.4);
+    }
+    
+    /* Document mock textures */
+    .paper-shadow {
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+    }
+    .paper-light-shadow {
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Subtle neon pulse */
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.9; }
+    }
+    .neon-glow {
+      animation: glowPulse 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-surface-base text-slate-100 font-sans antialiased h-screen flex flex-col overflow-hidden select-none transition-colors duration-300">
+
+  <header class="h-13 bg-slate-900/90 border-b border-surface-border px-4 flex items-center justify-between shrink-0 backdrop-blur-md z-30">
+    <!-- Window Identity & Controls -->
+    <div class="flex items-center space-x-3">
+      <div class="flex space-x-2 mr-2">
+        <div class="w-3 h-3 rounded-full bg-rose-500/80 hover:bg-rose-500 cursor-pointer transition"></div>
+        <div class="w-3 h-3 rounded-full bg-amber-500/80 hover:bg-amber-500 cursor-pointer transition"></div>
+        <div class="w-3 h-3 rounded-full bg-emerald-500/80 hover:bg-emerald-500 cursor-pointer transition"></div>
+      </div>
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
+          <i class="fa-solid fa-layer-group text-sm"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-base tracking-tight text-white">BatchCraft</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">PRO v2.0</span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block" id="appSubtext">เครื่องมือจัดการ PDF ความเร็วสูง ออฟไลน์ ปลอดภัย 100%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Utilities: Privacy Badge, Language, Theme, Settings -->
+    <div class="flex items-center space-x-2">
+      <!-- Privacy Security Pill -->
+      <div class="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+        <i class="fa-solid fa-shield-halved text-[11px]"></i>
+        <span id="privacyTag">ทำงานในเครื่อง ไม่ส่งออกคลาวด์</span>
+      </div>
+
+      <!-- Language Switcher -->
+      <div class="bg-surface-card p-0.5 rounded-lg border border-surface-border flex items-center text-xs">
+        <button id="langTh" onclick="setLanguage('th')" class="px-2.5 py-1 rounded-md font-medium transition bg-blue-600 text-white shadow-sm">ไทย</button>
+        <button id="langEn" onclick="setLanguage('en')" class="px-2.5 py-1 rounded-md font-medium text-slate-400 hover:text-white transition">EN</button>
+      </div>
+
+      <!-- Dark / Light Theme Toggle -->
+      <button onclick="toggleTheme()" class="w-8 h-8 rounded-lg bg-surface-card border border-surface-border text-slate-300 hover:text-white hover:border-slate-600 flex items-center justify-center transition">
+        <i id="themeIcon" class="fa-regular fa-moon text-sm"></i>
+      </button>
+
+      <!-- Settings Dropdown Button -->
+      <button onclick="openSettingsModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface-card border border-surface-border text-xs text-slate-300 hover:text-white hover:border-slate-600 transition">
+        <i class="fa-solid fa-sliders text-xs"></i>
+        <span id="btnSettingsText" class="hidden sm:inline">การตั้งค่า</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="bg-surface-card/90 border-b border-surface-border px-4 py-2 shrink-0 overflow-x-auto no-scrollbar backdrop-blur-md">
+    <div class="flex items-center space-x-1.5 min-w-max">
+      <!-- Tab 1: PDF to Image (Active) -->
+      <button onclick="switchTab('pdf2img')" id="tab-pdf2img" class="nav-tab active flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-medium bg-blue-600 text-white shadow-md shadow-blue-600/30 transition">
+        <i class="fa-regular fa-images text-sm"></i>
+        <span data-i18n="tab_pdf2img">PDF ➔ รูปภาพ</span>
+      </button>
+
+      <!-- Tab 2: Image to PDF -->
+      <button onclick="switchTab('img2pdf')" id="tab-img2pdf" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-surface-panel transition">
+        <i class="fa-solid fa-file-image text-sm"></i>
+        <span data-i18n="tab_img2pdf">รูปภาพ ➔ PDF</span>
+      </button>
+
+      <!-- Tab 3: Merge PDF -->
+      <button onclick="switchTab('merge')" id="tab-merge" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-surface-panel transition">
+        <i class="fa-solid fa-layer-group text-sm"></i>
+        <span data-i18n="tab_merge">รวมไฟล์ PDF</span>
+      </button>
+
+      <!-- Tab 4: Split PDF -->
+      <button onclick="switchTab('split')" id="tab-split" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-surface-panel transition">
+        <i class="fa-solid fa-scissors text-sm"></i>
+        <span data-i18n="tab_split">แยกหน้า PDF</span>
+      </button>
+
+      <!-- Tab 5: Rotate PDF -->
+      <button onclick="switchTab('rotate')" id="tab-rotate" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-surface-panel transition">
+        <i class="fa-solid fa-rotate text-sm"></i>
+        <span data-i18n="tab_rotate">หมุน & จัดหน้า</span>
+      </button>
+
+      <!-- Tab 6: Watermark PDF -->
+      <button onclick="switchTab('watermark')" id="tab-watermark" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-surface-panel transition">
+        <i class="fa-solid fa-stamp text-sm"></i>
+        <span data-i18n="tab_watermark">ใส่ลายน้ำ</span>
+      </button>
+
+      <div class="h-4 w-px bg-surface-border mx-1"></div>
+
+      <!-- Tab 7: About -->
+      <button onclick="openAboutModal()" class="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-surface-panel transition">
+        <i class="fa-regular fa-circle-question text-sm"></i>
+        <span data-i18n="tab_about">เกี่ยวกับ</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+    <!-- LEFT COLUMN: Workflow, Upload & Batch Operations (~55% width) -->
+    <section class="flex-1 lg:w-7/12 border-b lg:border-b-0 lg:border-r border-surface-border flex flex-col bg-surface-base/95 overflow-y-auto">
+      
+      <!-- Operation Banner Title -->
+      <div class="px-6 pt-5 pb-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 id="currentToolTitle" class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              <span>แปลงหน้า PDF เป็นรูปภาพ</span>
+              <span class="text-xs font-normal text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">Batch Engine</span>
+            </h1>
+            <p id="currentToolDesc" class="text-xs text-slate-400 mt-1">
+              แปลงเอกสารเป็นรูปภาพแยกรายหน้า คมชัดสูง ปรับความละเอียดได้ และประมวลผลพร้อมกันหลายไฟล์
+            </p>
+          </div>
+          <div class="hidden sm:flex items-center gap-2">
+            <span class="text-xs text-slate-400" id="queueCountBadge">3 ไฟล์ในคิว</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 space-y-4 pb-6">
+
+        <div id="dropZone" 
+             ondragover="handleDragOver(event)" 
+             ondragleave="handleDragLeave(event)" 
+             ondrop="handleDrop(event)"
+             onclick="triggerFileInput()"
+             class="relative group border-2 border-dashed border-slate-700 hover:border-blue-500 bg-surface-card/60 hover:bg-blue-500/5 rounded-2xl p-6 text-center cursor-pointer transition-all duration-300">
+          <input type="file" id="fileInput" class="hidden" multiple accept=".pdf" onchange="handleFileSelect(event)">
+          
+          <div class="flex flex-col items-center justify-center space-y-2.5">
+            <div class="w-13 h-13 rounded-2xl bg-blue-500/10 group-hover:bg-blue-500/20 text-blue-400 group-hover:scale-110 flex items-center justify-center transition duration-300 border border-blue-500/20">
+              <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-200">
+                <span data-i18n="dropzone_title">ลากไฟล์ PDF มาวางที่นี่</span> 
+                <span class="text-blue-400 underline decoration-blue-500/40 hover:text-blue-300 font-medium" data-i18n="dropzone_click">หรือคลิกเพื่อเลือกไฟล์</span>
+              </p>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n="dropzone_sub">รองรับการเลือกพร้อมกันหลายไฟล์ (Batch Mode) • สูงสุดไฟล์ละ 250 MB</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface-card rounded-2xl border border-surface-border p-4 shadow-xl">
+          <div class="flex items-center justify-between pb-3 border-b border-surface-border">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-list-check text-blue-400 text-xs"></i>
+              <span class="text-xs font-semibold text-slate-200" data-i18n="queue_header">รายการเอกสารรอประมวลผล</span>
+              <span id="fileBadge" class="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded-full">3</span>
+            </div>
+
+            <!-- Queue Control Buttons -->
+            <div class="flex items-center space-x-2">
+              <button onclick="triggerFileInput()" class="text-xs font-medium px-2.5 py-1 rounded-lg bg-surface-panel hover:bg-slate-700 text-slate-300 hover:text-white border border-surface-border transition flex items-center space-x-1">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span data-i18n="btn_add_files">เพิ่มไฟล์...</span>
+              </button>
+              <button onclick="removeSelectedFiles()" class="text-xs font-medium px-2.5 py-1 rounded-lg bg-surface-panel hover:bg-rose-900/40 text-rose-300 hover:text-rose-200 border border-rose-500/20 transition flex items-center space-x-1">
+                <i class="fa-regular fa-trash-can text-[10px]"></i>
+                <span data-i18n="btn_delete_selected">ลบที่เลือก</span>
+              </button>
+              <button onclick="clearAllFiles()" class="text-xs font-medium px-2.5 py-1 rounded-lg bg-surface-panel hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-surface-border transition" data-i18n="btn_clear_all">
+                ล้างทั้งหมด
+              </button>
+            </div>
+          </div>
+
+          <!-- File Items Container -->
+          <div id="fileListContainer" class="mt-3 space-y-2 max-h-56 overflow-y-auto pr-1">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <div class="bg-surface-card rounded-2xl border border-surface-border p-4.5 space-y-4 shadow-xl">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-gear text-blue-400"></i>
+              <span data-i18n="settings_export_title">การตั้งค่าการแปลงรูปภาพ</span>
+            </span>
+            <span class="text-[11px] text-slate-400" data-i18n="settings_target_info">ประมวลผลคุณภาพสูงด้วย Vector Render</span>
+          </div>
+
+          <!-- Format & Quality Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Output Format Radio Group -->
+            <div class="bg-surface-panel/70 p-3 rounded-xl border border-surface-border">
+              <label class="text-[11px] font-semibold text-slate-300 block mb-2" data-i18n="label_output_format">รูปแบบไฟล์ภาพ (Format)</label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <label class="format-option relative flex flex-col items-center justify-center p-2 rounded-lg border border-blue-500/40 bg-blue-500/10 cursor-pointer text-center">
+                  <input type="radio" name="formatOption" value="png" checked class="hidden" onchange="updateFormatChoice(this)">
+                  <span class="font-bold text-xs text-white">PNG</span>
+                  <span class="text-[9px] text-blue-300" data-i18n="format_png_sub">คมชัดสูงสุด</span>
+                </label>
+                <label class="format-option relative flex flex-col items-center justify-center p-2 rounded-lg border border-surface-border bg-surface-card hover:bg-surface-panel cursor-pointer text-center">
+                  <input type="radio" name="formatOption" value="jpg" class="hidden" onchange="updateFormatChoice(this)">
+                  <span class="font-bold text-xs text-slate-300">JPG</span>
+                  <span class="text-[9px] text-slate-400" data-i18n="format_jpg_sub">ขนาดกะทัดรัด</span>
+                </label>
+                <label class="format-option relative flex flex-col items-center justify-center p-2 rounded-lg border border-surface-border bg-surface-card hover:bg-surface-panel cursor-pointer text-center">
+                  <input type="radio" name="formatOption" value="webp" class="hidden" onchange="updateFormatChoice(this)">
+                  <span class="font-bold text-xs text-slate-300">WEBP</span>
+                  <span class="text-[9px] text-slate-400" data-i18n="format_webp_sub">ไฟล์เว็บรุ่นใหม่</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Resolution / DPI Slider -->
+            <div class="bg-surface-panel/70 p-3 rounded-xl border border-surface-border flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-[11px] font-semibold text-slate-300" data-i18n="label_resolution">ความละเอียด (DPI)</label>
+                <span id="dpiValueText" class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">300 DPI (พิมพ์คมชัด)</span>
+              </div>
+              <input type="range" id="dpiSlider" min="72" max="600" step="72" value="300" 
+                     oninput="updateDpiDisplay(this.value)"
+                     class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500 my-2">
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>72 Web</span>
+                <span>150 Medium</span>
+                <span>300 Print</span>
+                <span>600 Ultra</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Destination Folder Picker -->
+          <div class="bg-surface-panel/70 p-3 rounded-xl border border-surface-border">
+            <label class="text-[11px] font-semibold text-slate-300 block mb-1.5" data-i18n="label_destination_folder">โฟลเดอร์ปลายทางสำหรับบันทึกภาพ</label>
+            <div class="flex items-center space-x-2">
+              <div class="flex-1 bg-surface-card border border-surface-border rounded-lg px-3 py-2 flex items-center space-x-2 text-xs text-slate-300 font-mono truncate">
+                <i class="fa-regular fa-folder-open text-blue-400"></i>
+                <span id="outputFolderDisplay" class="truncate">C:/Users/BatchCraft/Pictures/Exported_PDFs</span>
+              </div>
+              <button onclick="browseFolderModal()" class="shrink-0 px-3 py-2 rounded-lg bg-surface-panel hover:bg-slate-700 border border-surface-border text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-folder"></i>
+                <span data-i18n="btn_browse_folder">เลือกโฟลเดอร์...</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action CTA Trigger Button -->
+          <div class="pt-1">
+            <button id="btnStartConvert" onclick="startBatchConversion()" class="w-full relative group overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all duration-200 flex items-center justify-center space-x-2">
+              <span class="absolute inset-0 w-1/2 h-full bg-white/10 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition duration-1000"></span>
+              <i class="fa-solid fa-bolt-lightning text-amber-300 text-sm"></i>
+              <span id="btnStartText" class="text-sm font-semibold tracking-wide" data-i18n="btn_start_conversion">เริ่มแปลง PDF เป็นรูปภาพทันที</span>
+              <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono font-normal">3 ไฟล์ (24 หน้า)</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="flex-1 lg:w-5/12 flex flex-col bg-surface-card/60 backdrop-blur-sm relative overflow-hidden">
+      
+      <!-- Top Inspector Bar -->
+      <div class="h-12 border-b border-surface-border px-4 flex items-center justify-between shrink-0 bg-surface-card/90">
+        <!-- Document Name and Status -->
+        <div class="flex items-center space-x-2 min-w-0">
+          <i class="fa-solid fa-file-pdf text-rose-400 text-sm"></i>
+          <span id="previewFileName" class="text-xs font-semibold text-slate-200 truncate">สัญญาว่าจ้างบริการ_2026.pdf</span>
+        </div>
+
+        <!-- Canvas Controls (Zoom, Fit, Rotate) -->
+        <div class="flex items-center space-x-1.5">
+          <!-- Page Navigator -->
+          <div class="flex items-center bg-surface-panel rounded-lg border border-surface-border px-1.5 py-0.5 text-xs text-slate-300 mr-2">
+            <button onclick="prevPage()" class="p-1 hover:text-white disabled:opacity-30" id="btnPrevPage">
+              <i class="fa-solid fa-chevron-left text-[10px]"></i>
+            </button>
+            <span class="mx-2 font-mono text-xs font-semibold" id="pageNumberDisplay">1 / 12</span>
+            <button onclick="nextPage()" class="p-1 hover:text-white" id="btnNextPage">
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
+
+          <!-- Zoom Out -->
+          <button onclick="adjustZoom(-10)" class="w-7 h-7 rounded-lg bg-surface-panel border border-surface-border text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-minus text-[10px]"></i>
+          </button>
+          
+          <!-- Zoom Value -->
+          <span id="zoomLevelDisplay" class="text-xs font-mono font-medium text-slate-300 w-11 text-center">100%</span>
+
+          <!-- Zoom In -->
+          <button onclick="adjustZoom(10)" class="w-7 h-7 rounded-lg bg-surface-panel border border-surface-border text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+          </button>
+
+          <!-- Rotate Page Preview -->
+          <button onclick="rotatePreview()" title="หมุนพรีวิว 90 องศา" class="w-7 h-7 rounded-lg bg-surface-panel border border-surface-border text-slate-300 hover:text-white flex items-center justify-center transition ml-1">
+            <i class="fa-solid fa-rotate-right text-[11px]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Canvas Viewport -->
+      <div id="canvasViewport" class="flex-1 overflow-auto p-6 flex items-center justify-center bg-slate-950/70 relative">
+        <!-- Interactive Paper Sheet Mockup -->
+        <div id="paperMock" class="w-[340px] h-[480px] bg-white text-slate-900 rounded-sm paper-shadow flex flex-col p-6 transition-all duration-300 origin-center select-none relative overflow-hidden" style="transform: scale(1) rotate(0deg);">
+          
+          <!-- Document Mockup Header -->
+          <div class="flex items-start justify-between border-b pb-3 border-slate-200">
+            <div>
+              <div class="w-24 h-4 bg-slate-800 rounded-sm mb-1.5"></div>
+              <div class="w-40 h-2 bg-slate-300 rounded-sm"></div>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] font-bold tracking-wider text-blue-600 block">TAX INVOICE / DOC</span>
+              <span class="text-[8px] text-slate-400 font-mono">#INV-2026-089</span>
+            </div>
+          </div>
+
+          <!-- Document Mockup Skeleton Lines -->
+          <div class="mt-4 space-y-2 flex-1">
+            <div class="w-3/4 h-2.5 bg-slate-300 rounded-sm"></div>
+            <div class="w-full h-2 bg-slate-200 rounded-sm"></div>
+            <div class="w-5/6 h-2 bg-slate-200 rounded-sm"></div>
+            <div class="w-4/6 h-2 bg-slate-200 rounded-sm"></div>
+
+            <!-- Mock Data Table -->
+            <div class="mt-4 border border-slate-200 rounded-sm overflow-hidden text-[8px]">
+              <div class="bg-slate-100 p-1.5 flex font-semibold text-slate-600 border-b border-slate-200">
+                <span class="w-1/2">รายการบริการ</span>
+                <span class="w-1/4 text-center">จำนวน</span>
+                <span class="w-1/4 text-right">ยอดเงิน (THB)</span>
+              </div>
+              <div class="p-1.5 flex border-b border-slate-100 text-slate-600">
+                <span class="w-1/2 font-medium">1. Batch Processing API</span>
+                <span class="w-1/4 text-center">1</span>
+                <span class="w-1/4 text-right">15,000.00</span>
+              </div>
+              <div class="p-1.5 flex border-b border-slate-100 text-slate-600">
+                <span class="w-1/2 font-medium">2. High-DPI Engine Lic.</span>
+                <span class="w-1/4 text-center">1</span>
+                <span class="w-1/4 text-right">8,500.00</span>
+              </div>
+              <div class="bg-slate-50 p-1.5 flex font-bold text-slate-900 justify-between">
+                <span>รวมทั้งสิ้น</span>
+                <span class="text-blue-600">23,500.00 THB</span>
+              </div>
+            </div>
+
+            <!-- Signature & Stamp Mockup -->
+            <div class="mt-6 flex items-end justify-between pt-4">
+              <div class="space-y-1">
+                <div class="w-20 h-1 bg-slate-300 rounded"></div>
+                <div class="text-[7px] text-slate-400">ผู้มีอำนาจลงนาม</div>
+              </div>
+              <div class="w-14 h-14 rounded-full border-2 border-dashed border-rose-400/80 flex items-center justify-center rotate-[-12deg] text-rose-500 font-bold text-[8px]">
+                CERTIFIED
+              </div>
+            </div>
+          </div>
+
+          <!-- Document Watermark Preview indicator -->
+          <div class="text-center text-[7px] text-slate-400 pt-2 border-t border-slate-100 flex justify-between">
+            <span>หน้าที่ <span id="mockPaperPage">1</span> จาก 12</span>
+            <span>BatchCraft Vector Renderer</span>
+          </div>
+        </div>
+
+        <!-- Floating Quick View Badge -->
+        <div class="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-300 flex items-center space-x-2">
+          <i class="fa-regular fa-eye text-blue-400"></i>
+          <span data-i18n="preview_rendering_status">เรนเดอร์สด 1:1</span>
+        </div>
+      </div>
+
+      <div class="h-24 border-t border-surface-border bg-surface-card/95 px-4 py-2 flex flex-col justify-between shrink-0">
+        <div class="flex items-center justify-between text-[11px] text-slate-400">
+          <span class="font-medium" data-i18n="pages_thumbnail_title">หน้าทั้งหมดในไฟล์ (คลิกเพื่อสลับหน้า)</span>
+          <div class="flex items-center space-x-2">
+            <label class="flex items-center space-x-1 cursor-pointer">
+              <input type="checkbox" checked class="rounded accent-blue-600 text-xs">
+              <span class="text-[10px]" data-i18n="select_all_pages">เลือกทั้งหมด</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Thumbnails Strip -->
+        <div class="flex items-center space-x-2.5 overflow-x-auto pb-1 pt-1 no-scrollbar" id="thumbnailStrip">
+          <!-- Thumb 1 (Active) -->
+          <div onclick="selectPageThumb(1)" class="page-thumb active relative shrink-0 w-11 h-14 bg-white rounded border-2 border-blue-500 shadow-md cursor-pointer transition flex flex-col justify-between p-1">
+            <span class="text-[7px] font-bold text-slate-800">P.1</span>
+            <span class="text-[6px] text-blue-600 font-bold self-end">✓</span>
+          </div>
+          <!-- Thumb 2 -->
+          <div onclick="selectPageThumb(2)" class="page-thumb relative shrink-0 w-11 h-14 bg-white/90 hover:bg-white rounded border border-surface-border hover:border-slate-400 shadow-sm cursor-pointer transition flex flex-col justify-between p-1">
+            <span class="text-[7px] font-bold text-slate-800">P.2</span>
+            <span class="text-[6px] text-slate-400 self-end">✓</span>
+          </div>
+          <!-- Thumb 3 -->
+          <div onclick="selectPageThumb(3)" class="page-thumb relative shrink-0 w-11 h-14 bg-white/90 hover:bg-white rounded border border-surface-border hover:border-slate-400 shadow-sm cursor-pointer transition flex flex-col justify-between p-1">
+            <span class="text-[7px] font-bold text-slate-800">P.3</span>
+            <span class="text-[6px] text-slate-400 self-end">✓</span>
+          </div>
+          <!-- Thumb 4 -->
+          <div onclick="selectPageThumb(4)" class="page-thumb relative shrink-0 w-11 h-14 bg-white/90 hover:bg-white rounded border border-surface-border hover:border-slate-400 shadow-sm cursor-pointer transition flex flex-col justify-between p-1">
+            <span class="text-[7px] font-bold text-slate-800">P.4</span>
+            <span class="text-[6px] text-slate-400 self-end">✓</span>
+          </div>
+          <!-- Thumb 5 -->
+          <div onclick="selectPageThumb(5)" class="page-thumb relative shrink-0 w-11 h-14 bg-white/90 hover:bg-white rounded border border-surface-border hover:border-slate-400 shadow-sm cursor-pointer transition flex flex-col justify-between p-1">
+            <span class="text-[7px] font-bold text-slate-800">P.5</span>
+            <span class="text-[6px] text-slate-400 self-end">✓</span>
+          </div>
+          <!-- Thumb 6 -->
+          <div onclick="selectPageThumb(6)" class="page-thumb relative shrink-0 w-11 h-14 bg-white/90 hover:bg-white rounded border border-surface-border hover:border-slate-400 shadow-sm cursor-pointer transition flex flex-col justify-between p-1">
+            <span class="text-[7px] font-bold text-slate-800">P.6</span>
+            <span class="text-[6px] text-slate-400 self-end">✓</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="h-10 bg-slate-900 border-t border-surface-border px-4 flex items-center justify-between shrink-0 text-xs text-slate-400 select-none z-20">
+    <!-- Left Engine status -->
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="statusText" class="font-medium text-slate-200">พร้อมใช้งาน (Ready)</span>
+      </div>
+      <span class="text-slate-600 hidden sm:inline">•</span>
+      <span class="hidden sm:inline text-slate-400">เอนจิน: PDFium v12.4 (Multi-thread)</span>
+    </div>
+
+    <!-- Right Batch Progress & Stats -->
+    <div class="flex items-center space-x-3 w-72 justify-end">
+      <span id="progressPercentText" class="font-mono text-[11px] text-slate-400">0%</span>
+      <div class="w-36 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60">
+        <div id="batchProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300 w-0"></div>
+      </div>
+      <button onclick="toggleInfoToast()" title="ข้อมูลระบบ" class="text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-circle-info"></i>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Box -->
+  <div id="toastNotification" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-surface-card border border-blue-500/30 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 max-w-sm">
+      <div id="toastIcon" class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <div class="flex-1">
+        <h4 id="toastTitle" class="text-xs font-bold text-slate-100">ดำเนินการเรียบร้อย</h4>
+        <p id="toastMessage" class="text-[11px] text-slate-400 mt-0.5">แปลงไฟล์ PDF 3 ไฟล์เป็นภาพเสร็จสิ้น</p>
+      </div>
+      <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal Dialog -->
+  <div id="settingsModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-card border border-surface-border rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+      <div class="flex items-center justify-between pb-3 border-b border-surface-border">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-sliders text-blue-400"></i>
+          <h3 class="font-bold text-base text-white" data-i18n="modal_settings_title">ตั้งค่าระบบ BatchCraft</h3>
+        </div>
+        <button onclick="closeSettingsModal()" class="w-7 h-7 rounded-lg bg-surface-panel hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4 text-xs">
+        <div>
+          <label class="font-medium text-slate-300 block mb-1">การเร่งความเร็วฮาร์ดแวร์ (Hardware Acceleration)</label>
+          <div class="flex items-center justify-between bg-surface-panel p-2.5 rounded-xl border border-surface-border">
+            <span class="text-slate-400">เปิดใช้งาน GPU ช่วยเรนเดอร์</span>
+            <input type="checkbox" checked class="accent-blue-600 rounded">
+          </div>
+        </div>
+
+        <div>
+          <label class="font-medium text-slate-300 block mb-1">การตั้งชื่อไฟล์อัตโนมัติ (File Naming Pattern)</label>
+          <input type="text" value="{filename}_page_{page:03d}.{ext}" class="w-full bg-surface-panel border border-surface-border rounded-lg px-3 py-2 text-slate-200 font-mono text-xs">
+          <span class="text-[10px] text-slate-500 mt-1 block">ตัวแปร: {filename}, {page}, {date}, {dpi}</span>
+        </div>
+
+        <div>
+          <label class="font-medium text-slate-300 block mb-1">การแจ้งเตือนเมื่อเสร็จสิ้น</label>
+          <div class="flex items-center justify-between bg-surface-panel p-2.5 rounded-xl border border-surface-border">
+            <span class="text-slate-400">ส่งเสียงเตือนและเปิดโฟลเดอร์ทันที</span>
+            <input type="checkbox" checked class="accent-blue-600 rounded">
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end space-x-2 pt-2 border-t border-surface-border">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-lg bg-surface-panel hover:bg-slate-700 text-slate-300">ยกเลิก</button>
+        <button onclick="saveSettingsModal()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium">บันทึกการตั้งค่า</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal Dialog -->
+  <div id="aboutModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-surface-card border border-surface-border rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl mx-auto shadow-lg shadow-blue-500/30">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+      <h3 class="font-bold text-lg text-white mt-3">BatchCraft Suite 2.0</h3>
+      <p class="text-xs text-blue-400 font-mono mt-0.5">Build 2026.10.15 - Next-Gen UI</p>
+      <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+        เครื่องมือจัดการ PDF มัลติฟังก์ชัน ออกแบบมาเพื่อประสิทธิภาพ ความเป็นส่วนตัว และความรวดเร็วในการแปลงไฟล์จำนวนมากในองค์กร
+      </p>
+      <div class="mt-4 pt-3 border-t border-surface-border text-[11px] text-slate-500">
+        ออกแบบ UX/UI ใหม่โดยใช้ Fluent Design System
+      </div>
+      <button onclick="closeAboutModal()" class="w-full mt-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // State Management
+    let currentLang = 'th';
+    let currentZoom = 100;
+    let currentRotation = 0;
+    let currentPage = 1;
+    const totalPages = 12;
+    let isProcessing = false;
+
+    // Mock Files Data
+    let fileQueue = [
+      {
+        id: 1,
+        name: 'สัญญาว่าจ้างบริการ_2026.pdf',
+        size: '4.8 MB',
+        pages: 12,
+        status: 'ready',
+        selected: true
+      },
+      {
+        id: 2,
+        name: 'ใบเสร็จรับเงิน_Q3_TaxInv.pdf',
+        size: '1.2 MB',
+        pages: 4,
+        status: 'ready',
+        selected: false
+      },
+      {
+        id: 3,
+        name: 'รายงานสรุปประจำปี_Presentation.pdf',
+        size: '18.5 MB',
+        pages: 36,
+        status: 'ready',
+        selected: false
+      }
+    ];
+
+    const translations = {
+      th: {
+        appSubtext: 'เครื่องมือจัดการ PDF ความเร็วสูง ออฟไลน์ ปลอดภัย 100%',
+        privacyTag: 'ทำงานในเครื่อง ไม่ส่งออกคลาวด์',
+        btnSettingsText: 'การตั้งค่า',
+        tab_pdf2img: 'PDF ➔ รูปภาพ',
+        tab_img2pdf: 'รูปภาพ ➔ PDF',
+        tab_merge: 'รวมไฟล์ PDF',
+        tab_split: 'แยกหน้า PDF',
+        tab_rotate: 'หมุน & จัดหน้า',
+        tab_watermark: 'ใส่ลายน้ำ',
+        tab_about: 'เกี่ยวกับ',
+        dropzone_title: 'ลากไฟล์ PDF มาวางที่นี่',
+        dropzone_click: 'หรือคลิกเพื่อเลือกไฟล์',
+        dropzone_sub: 'รองรับการเลือกพร้อมกันหลายไฟล์ (Batch Mode) • สูงสุดไฟล์ละ 250 MB',
+        queue_header: 'รายการเอกสารรอประมวลผล',
+        btn_add_files: 'เพิ่มไฟล์...',
+        btn_delete_selected: 'ลบที่เลือก',
+        btn_clear_all: 'ล้างทั้งหมด',
+        settings_export_title: 'การตั้งค่าการแปลงรูปภาพ',
+        settings_target_info: 'ประมวลผลคุณภาพสูงด้วย Vector Render',
+        label_output_format: 'รูปแบบไฟล์ภาพ (Format)',
+        format_png_sub: 'คมชัดสูงสุด',
+        format_jpg_sub: 'ขนาดกะทัดรัด',
+        format_webp_sub: 'ไฟล์เว็บรุ่นใหม่',
+        label_resolution: 'ความละเอียด (DPI)',
+        label_destination_folder: 'โฟลเดอร์ปลายทางสำหรับบันทึกภาพ',
+        btn_browse_folder: 'เลือกโฟลเดอร์...',
+        btn_start_conversion: 'เริ่มแปลง PDF เป็นรูปภาพทันที',
+        preview_rendering_status: 'เรนเดอร์สด 1:1',
+        pages_thumbnail_title: 'หน้าทั้งหมดในไฟล์ (คลิกเพื่อสลับหน้า)',
+        select_all_pages: 'เลือกทั้งหมด',
+        status_ready: 'พร้อมใช้งาน (Ready)',
+        status_converting: 'กำลังแปลงไฟล์...',
+        status_done: 'เสร็จสิ้นเรียบร้อย!'
+      },
+      en: {
+        appSubtext: 'High-speed, offline & 100% private PDF utility suite',
+        privacyTag: '100% Local Engine • No Cloud Upload',
+        btnSettingsText: 'Settings',
+        tab_pdf2img: 'PDF ➔ Image',
+        tab_img2pdf: 'Image ➔ PDF',
+        tab_merge: 'Merge PDF',
+        tab_split: 'Split PDF',
+        tab_rotate: 'Rotate & Reorder',
+        tab_watermark: 'Watermark',
+        tab_about: 'About',
+        dropzone_title: 'Drop PDF files here',
+        dropzone_click: 'or browse from computer',
+        dropzone_sub: 'Batch processing supported • Up to 250 MB per document',
+        queue_header: 'Documents Queue',
+        btn_add_files: 'Add Files...',
+        btn_delete_selected: 'Delete Selected',
+        btn_clear_all: 'Clear All',
+        settings_export_title: 'Image Conversion Settings',
+        settings_target_info: 'High quality multi-thread Vector Engine',
+        label_output_format: 'Output Format',
+        format_png_sub: 'Ultra Sharp',
+        format_jpg_sub: 'Compact Size',
+        format_webp_sub: 'Next-Gen Web',
+        label_resolution: 'Resolution (DPI)',
+        label_destination_folder: 'Output Folder Destination',
+        btn_browse_folder: 'Browse...',
+        btn_start_conversion: 'Convert PDF to Images Now',
+        preview_rendering_status: 'Live Render 1:1',
+        pages_thumbnail_title: 'Document Pages (Click to preview)',
+        select_all_pages: 'Select All',
+        status_ready: 'Ready for batch tasks',
+        status_converting: 'Processing batch items...',
+        status_done: 'Batch tasks completed!'
+      }
+    };
+
+    function renderFileQueue() {
+      const container = document.getElementById('fileListContainer');
+      const countBadge = document.getElementById('fileBadge');
+      const queueCountBadge = document.getElementById('queueCountBadge');
+      
+      countBadge.textContent = fileQueue.length;
+      queueCountBadge.textContent = `${fileQueue.length} ${currentLang === 'th' ? 'ไฟล์ในคิว' : 'files queued'}`;
+
+      if (fileQueue.length === 0) {
+        container.innerHTML = `
+          <div class="py-8 text-center text-slate-500 text-xs">
+            <i class="fa-regular fa-folder-open text-2xl mb-2 text-slate-600 block"></i>
+            ${currentLang === 'th' ? 'ยังไม่มีไฟล์ในคิว ลากไฟล์มาวางด้านบนเพื่อเริ่มต้น' : 'No files in queue. Drag and drop above to begin.'}
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = fileQueue.map(file => `
+        <div onclick="selectActiveFile(${file.id})" class="file-item p-2.5 rounded-xl border ${file.selected ? 'border-blue-500/50 bg-blue-500/10' : 'border-surface-border bg-surface-panel/50 hover:bg-surface-panel'} transition flex items-center justify-between cursor-pointer">
+          <div class="flex items-center space-x-3 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-file-pdf text-sm"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-slate-200 truncate ${file.selected ? 'text-blue-300' : ''}">${file.name}</p>
+              <div class="flex items-center space-x-2 text-[10px] text-slate-400 mt-0.5 font-mono">
+                <span>${file.pages} ${currentLang === 'th' ? 'หน้า' : 'pages'}</span>
+                <span>•</span>
+                <span>${file.size}</span>
+                <span>•</span>
+                <span class="text-emerald-400">${file.status === 'ready' ? (currentLang === 'th' ? 'พร้อม' : 'Ready') : 'Done'}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="event.stopPropagation(); deleteFile(${file.id})" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition" title="ลบไฟล์">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectActiveFile(id) {
+      fileQueue.forEach(f => f.selected = (f.id === id));
+      const selected = fileQueue.find(f => f.id === id);
+      if (selected) {
+        document.getElementById('previewFileName').textContent = selected.name;
+        showToast(currentLang === 'th' ? 'เลือกดูเอกสาร' : 'Document Selected', selected.name, 'fa-file-pdf');
+      }
+      renderFileQueue();
+    }
+
+    function deleteFile(id) {
+      fileQueue = fileQueue.filter(f => f.id !== id);
+      if (fileQueue.length > 0 && !fileQueue.some(f => f.selected)) {
+        fileQueue[0].selected = true;
+        document.getElementById('previewFileName').textContent = fileQueue[0].name;
+      }
+      renderFileQueue();
+    }
+
+    function removeSelectedFiles() {
+      fileQueue = fileQueue.filter(f => !f.selected);
+      if (fileQueue.length > 0) fileQueue[0].selected = true;
+      renderFileQueue();
+      showToast(currentLang === 'th' ? 'ลบไฟล์แล้ว' : 'Removed', currentLang === 'th' ? 'ลบไฟล์ที่เลือกออกจากคิวสำเร็จ' : 'Selected files removed', 'fa-trash-can');
+    }
+
+    function clearAllFiles() {
+      fileQueue = [];
+      renderFileQueue();
+      showToast(currentLang === 'th' ? 'ล้างรายการแล้ว' : 'Cleared', currentLang === 'th' ? 'ล้างรายการคิวทั้งหมดเรียบร้อย' : 'All files cleared from queue', 'fa-broom');
+    }
+
+    function triggerFileInput() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+      if (files.length > 0) {
+        files.forEach((f, idx) => {
+          fileQueue.push({
+            id: Date.now() + idx,
+            name: f.name,
+            size: (f.size / (1024 * 1024)).toFixed(1) + ' MB',
+            pages: Math.floor(Math.random() * 20) + 1,
+            status: 'ready',
+            selected: false
+          });
+        });
+        renderFileQueue();
+        showToast(currentLang === 'th' ? 'เพิ่มไฟล์สำเร็จ' : 'Files Added', `${currentLang === 'th' ? 'เพิ่ม' : 'Added'} ${files.length} ${currentLang === 'th' ? 'ไฟล์เข้าสู่คิว' : 'files to queue'}`);
+      }
+    }
+
+    // Drag and drop events
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('border-blue-500', 'bg-blue-500/10');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('border-blue-500', 'bg-blue-500/10');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('border-blue-500', 'bg-blue-500/10');
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length > 0) {
+        files.forEach((f, idx) => {
+          fileQueue.push({
+            id: Date.now() + idx,
+            name: f.name,
+            size: (f.size / (1024 * 1024)).toFixed(1) + ' MB',
+            pages: Math.floor(Math.random() * 15) + 1,
+            status: 'ready',
+            selected: false
+          });
+        });
+        renderFileQueue();
+        showToast(currentLang === 'th' ? 'ลากไฟล์เข้ามาสำเร็จ' : 'Files Dropped', `${files.length} ${currentLang === 'th' ? 'ไฟล์ถูกเพิ่มลงคิว' : 'files loaded'}`);
+      }
+    }
+
+    function updatePaperTransform() {
+      const paper = document.getElementById('paperMock');
+      paper.style.transform = `scale(${currentZoom / 100}) rotate(${currentRotation}deg)`;
+    }
+
+    function adjustZoom(delta) {
+      currentZoom = Math.min(Math.max(currentZoom + delta, 50), 200);
+      document.getElementById('zoomLevelDisplay').textContent = `${currentZoom}%`;
+      updatePaperTransform();
+    }
+
+    function rotatePreview() {
+      currentRotation = (currentRotation + 90) % 360;
+      updatePaperTransform();
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        updatePageDisplay();
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        updatePageDisplay();
+      }
+    }
+
+    function selectPageThumb(num) {
+      currentPage = num;
+      updatePageDisplay();
+      document.querySelectorAll('.page-thumb').forEach((thumb, idx) => {
+        if (idx === num - 1) {
+          thumb.classList.add('border-blue-500', 'border-2');
+          thumb.classList.remove('border-surface-border');
+        } else {
+          thumb.classList.remove('border-blue-500', 'border-2');
+          thumb.classList.add('border-surface-border');
+        }
+      });
+    }
+
+    function updatePageDisplay() {
+      document.getElementById('pageNumberDisplay').textContent = `${currentPage} / ${totalPages}`;
+      document.getElementById('mockPaperPage').textContent = currentPage;
+      document.getElementById('btnPrevPage').disabled = (currentPage === 1);
+      document.getElementById('btnNextPage').disabled = (currentPage === totalPages);
+    }
+
+    function updateDpiDisplay(val) {
+      const text = document.getElementById('dpiValueText');
+      let note = 'Web';
+      if (val >= 300) note = currentLang === 'th' ? 'พิมพ์คมชัด' : 'Print Quality';
+      else if (val >= 150) note = currentLang === 'th' ? 'ปานกลาง' : 'Medium Quality';
+      text.textContent = `${val} DPI (${note})`;
+    }
+
+    function updateFormatChoice(radio) {
+      document.querySelectorAll('.format-option').forEach(el => {
+        el.classList.remove('border-blue-500/40', 'bg-blue-500/10');
+        el.classList.add('border-surface-border', 'bg-surface-card');
+      });
+      const parent = radio.closest('.format-option');
+      parent.classList.add('border-blue-500/40', 'bg-blue-500/10');
+      parent.classList.remove('border-surface-border', 'bg-surface-card');
+    }
+
+    function startBatchConversion() {
+      if (isProcessing) return;
+      if (fileQueue.length === 0) {
+        showToast(currentLang === 'th' ? 'ไม่พบไฟล์' : 'No Files', currentLang === 'th' ? 'กรุณาเพิ่มไฟล์ PDF ก่อนเริ่มแปลง' : 'Please add PDF files to queue first', 'fa-triangle-exclamation');
+        return;
+      }
+
+      isProcessing = true;
+      const btn = document.getElementById('btnStartConvert');
+      const statusText = document.getElementById('statusText');
+      const progressBar = document.getElementById('batchProgressBar');
+      const percentText = document.getElementById('progressPercentText');
+
+      btn.classList.add('opacity-60', 'cursor-not-allowed');
+      statusText.textContent = currentLang === 'th' ? 'กำลังแปลงไฟล์ (Converting 1/3)...' : 'Processing batch (1/3)...';
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 4;
+        progressBar.style.width = `${progress}%`;
+        percentText.textContent = `${progress}%`;
+
+        if (progress === 40) {
+          statusText.textContent = currentLang === 'th' ? 'กำลังเรนเดอร์ภาพความละเอียด 300 DPI...' : 'Rendering high-dpi vector assets...';
+        } else if (progress === 80) {
+          statusText.textContent = currentLang === 'th' ? 'กำลังบันทึกลงโฟลเดอร์ปลายทาง...' : 'Writing output images to destination...';
+        }
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          isProcessing = false;
+          btn.classList.remove('opacity-60', 'cursor-not-allowed');
+          statusText.textContent = currentLang === 'th' ? 'แปลงสำเร็จครบทั้ง 3 ไฟล์!' : 'Batch conversion completed successfully!';
+          showToast(
+            currentLang === 'th' ? 'แปลงไฟล์สำเร็จเรียบร้อย!' : 'Conversion Completed!', 
+            currentLang === 'th' ? 'บันทึกภาพ PNG ทั้งหมดลงโฟลเดอร์เรียบร้อยแล้ว' : 'All image assets saved to output directory'
+          );
+          setTimeout(() => {
+            progressBar.style.width = '0%';
+            percentText.textContent = '0%';
+            statusText.textContent = translations[currentLang].status_ready;
+          }, 3500);
+        }
+      }, 70);
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      if (lang === 'th') {
+        document.getElementById('langTh').classList.add('bg-blue-600', 'text-white');
+        document.getElementById('langTh').classList.remove('text-slate-400');
+        document.getElementById('langEn').classList.remove('bg-blue-600', 'text-white');
+        document.getElementById('langEn').classList.add('text-slate-400');
+      } else {
+        document.getElementById('langEn').classList.add('bg-blue-600', 'text-white');
+        document.getElementById('langEn').classList.remove('text-slate-400');
+        document.getElementById('langTh').classList.remove('bg-blue-600', 'text-white');
+        document.getElementById('langTh').classList.add('text-slate-400');
+      }
+
+      // Apply i18n texts
+      document.getElementById('appSubtext').textContent = translations[lang].appSubtext;
+      document.getElementById('privacyTag').textContent = translations[lang].privacyTag;
+      document.getElementById('btnSettingsText').textContent = translations[lang].btnSettingsText;
+      document.getElementById('statusText').textContent = translations[lang].status_ready;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      renderFileQueue();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('themeIcon');
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        showToast('สลับธีม', 'เปลี่ยนเป็นธีมสว่าง (Light Mode)', 'fa-sun');
+      } else {
+        html.classList.add('dark');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        showToast('สลับธีม', 'เปลี่ยนเป็นธีมมืด (Dark Mode)', 'fa-moon');
+      }
+    }
+
+    // Modal & Toast Helpers
+    function showToast(title, message, iconClass = 'fa-check') {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMessage').textContent = message;
+      document.getElementById('toastIcon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+
+      toast.classList.remove('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        hideToast();
+      }, 3000);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById('toastNotification');
+      toast.classList.add('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+      document.getElementById('settingsModal').classList.add('flex');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+      document.getElementById('settingsModal').classList.remove('flex');
+    }
+
+    function saveSettingsModal() {
+      closeSettingsModal();
+      showToast(currentLang === 'th' ? 'บันทึกสำเร็จ' : 'Settings Saved', currentLang === 'th' ? 'อัปเดตการตั้งค่าระบบเรียบร้อย' : 'Configuration preferences updated');
+    }
+
+    function openAboutModal() {
+      document.getElementById('aboutModal').classList.remove('hidden');
+      document.getElementById('aboutModal').classList.add('flex');
+    }
+
+    function closeAboutModal() {
+      document.getElementById('aboutModal').classList.add('hidden');
+      document.getElementById('aboutModal').classList.remove('flex');
+    }
+
+    function browseFolderModal() {
+      showToast(
+        currentLang === 'th' ? 'เลือกโฟลเดอร์' : 'Folder Destination', 
+        'C:/Users/BatchCraft/Pictures/Exported_PDFs',
+        'fa-folder-open'
+      );
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        b.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30');
+        b.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30');
+        activeBtn.classList.remove('text-slate-400');
+      }
+      showToast(
+        currentLang === 'th' ? 'เปลี่ยนโหมดทำงาน' : 'Switched Tool', 
+        activeBtn ? activeBtn.innerText.trim() : tabId,
+        'fa-arrow-right-arrow-left'
+      );
+    }
+
+    function toggleInfoToast() {
+      showToast('ระบบเอนจิน', 'ใช้หน่วยความจำ 48.2 MB • เธรดทำงาน: 8 Cores', 'fa-microchip');
+    }
+
+    window.onload = function() {
+      renderFileQueue();
+      updatePageDisplay();
+    };
+  </script>
+</body>
+</html>

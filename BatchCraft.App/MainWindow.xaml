@@ -5,11 +5,15 @@
         Height="760" Width="1100" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource TextBrush}" FontFamily="Segoe UI">
   <Window.Resources>
-    <SolidColorBrush x:Key="WindowBrush" Color="#111827"/><SolidColorBrush x:Key="PanelBrush" Color="#1F2937"/>
-    <SolidColorBrush x:Key="InputBrush" Color="#273449"/><SolidColorBrush x:Key="TextBrush" Color="#F3F4F6"/>
-    <SolidColorBrush x:Key="MutedBrush" Color="#AAB4C3"/><SolidColorBrush x:Key="BorderBrush" Color="#374151"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="#3B82F6"/><SolidColorBrush x:Key="DropBrush" Color="#17233A"/>
-    <SolidColorBrush x:Key="StatusBrush" Color="#182438"/><SolidColorBrush x:Key="SuccessBrush" Color="#34D399"/>
+    <SolidColorBrush x:Key="WindowBrush" Color="#0B0F19"/><SolidColorBrush x:Key="PanelBrush" Color="#111827"/>
+    <SolidColorBrush x:Key="InputBrush" Color="#151F32"/><SolidColorBrush x:Key="TextBrush" Color="#F8FAFC"/>
+    <SolidColorBrush x:Key="MutedBrush" Color="#94A3B8"/><SolidColorBrush x:Key="BorderBrush" Color="#1E293B"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#2563EB"/><SolidColorBrush x:Key="DropBrush" Color="#0F172A"/>
+    <SolidColorBrush x:Key="StatusBrush" Color="#0B1120"/><SolidColorBrush x:Key="SuccessBrush" Color="#10B981"/>
+    <SolidColorBrush x:Key="BadgeBgBrush" Color="#1E3A8A"/><SolidColorBrush x:Key="BadgeBorderBrush" Color="#3B82F6"/>
+    <SolidColorBrush x:Key="BadgeTextBrush" Color="#60A5FA"/>
+    <SolidColorBrush x:Key="PrivacyBgBrush" Color="#064E3B"/><SolidColorBrush x:Key="PrivacyBorderBrush" Color="#059669"/>
+    <SolidColorBrush x:Key="PrivacyTextBrush" Color="#34D399"/>
 
     <!-- Vector Path Icon Geometries (16x16 standard) -->
     <Geometry x:Key="IconPdfToImagesGeometry">M3,1 C2.45,1 2,1.45 2,2 L2,14 C2,14.55 2.45,15 3,15 L7,15 L7,13.5 L3.5,13.5 L3.5,2.5 L7,2.5 L7,6 L10.5,6 L10.5,7 L12,7 L12,5.5 L7.5,1 L3,1 Z M9,9 C8.45,9 8,9.45 8,10 L8,15 C8,15.55 8.45,16 9,16 L15,16 C15.55,16 16,15.55 16,15 L16,10 C16,9.45 15.55,9 15,9 L9,9 Z M9.5,14.5 L14.5,14.5 L13.2,12.8 L12.1,14.1 L11.2,13 L9.5,14.5 Z</Geometry>
@@ -22,10 +26,57 @@
     <Geometry x:Key="IconAboutGeometry">M8,1 A7,7 0 1,0 8,15 A7,7 0 0,0 8,1 Z M7.2,4.2 A0.9,0.9 0 1,1 8.8,4.2 A0.9,0.9 0 0,1 7.2,4.2 Z M7,6.5 L9,6.5 L9,11.5 L7,11.5 Z</Geometry>
 
     <Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/></Style>
-    <Style TargetType="Button"><Setter Property="Padding" Value="14,9"/><Setter Property="Margin" Value="0,0,8,0"/><Setter Property="Cursor" Value="Hand"/><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/><Setter Property="BorderThickness" Value="1"/></Style>
-    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="Background" Value="{DynamicResource AccentBrush}"/><Setter Property="Foreground" Value="White"/><Setter Property="BorderThickness" Value="0"/></Style>
+    <Style TargetType="Button">
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="Margin" Value="0,0,8,0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Background" Value="{DynamicResource InputBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="BtnBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="BtnBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="PrimaryBorder" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="PrimaryBorder" Property="Background" Value="#1D4ED8"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
     <Style x:Key="ChoiceButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="MinWidth" Value="88"/><Setter Property="Margin" Value="0,0,8,0"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
-    <Style TargetType="TextBox"><Setter Property="Padding" Value="9"/><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/></Style>
+    <Style TargetType="TextBox"><Setter Property="Padding" Value="9,7"/><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/></Style>
     <Style TargetType="ComboBox"><Setter Property="Padding" Value="8"/><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/></Style>
     <Style TargetType="ListBox"><Setter Property="Background" Value="{DynamicResource InputBrush}"/><Setter Property="Foreground" Value="{DynamicResource TextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/></Style>
     <Style TargetType="TabControl">
@@ -37,9 +88,9 @@
     <Style TargetType="TabItem">
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
       <Setter Property="Background" Value="{DynamicResource InputBrush}"/>
-      <Setter Property="Padding" Value="14,8"/>
-      <Setter Property="Margin" Value="0,0,5,0"/>
-      <Setter Property="Height" Value="38"/>
+      <Setter Property="Padding" Value="15,9"/>
+      <Setter Property="Margin" Value="0,0,6,0"/>
+      <Setter Property="Height" Value="40"/>
       <Setter Property="VerticalContentAlignment" Value="Stretch"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
       <Setter Property="Template">
@@ -65,22 +116,33 @@
     </Style>
     <Style x:Key="Panel" TargetType="Border">
       <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
-      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="CornerRadius" Value="14"/>
       <Setter Property="Padding" Value="18,16"/>
       <Setter Property="VerticalAlignment" Value="Stretch"/>
     </Style>
-    <Style x:Key="DropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="18"/><Setter Property="AllowDrop" Value="True"/></Style>
-    <Style x:Key="CompactDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="9"/><Setter Property="Padding" Value="14,9"/><Setter Property="AllowDrop" Value="True"/></Style>
-    <Style x:Key="SquareDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="16,12"/><Setter Property="MinHeight" Value="86"/><Setter Property="AllowDrop" Value="True"/><Setter Property="Cursor" Value="Hand"/></Style>
+    <Style x:Key="DropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="12"/><Setter Property="Padding" Value="18"/><Setter Property="AllowDrop" Value="True"/></Style>
+    <Style x:Key="CompactDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="14,9"/><Setter Property="AllowDrop" Value="True"/></Style>
+    <Style x:Key="SquareDropZone" TargetType="Border"><Setter Property="Background" Value="{DynamicResource DropBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/><Setter Property="BorderThickness" Value="1.5"/><Setter Property="CornerRadius" Value="12"/><Setter Property="Padding" Value="16,12"/><Setter Property="MinHeight" Value="86"/><Setter Property="AllowDrop" Value="True"/><Setter Property="Cursor" Value="Hand"/></Style>
   </Window.Resources>
   <Grid Margin="24"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
     <DockPanel Margin="0,0,0,16">
       <StackPanel DockPanel.Dock="Left">
-        <TextBlock FontSize="29" FontWeight="SemiBold" Text="BatchCraft"/>
-        <TextBlock x:Name="SubtitleText" Foreground="{DynamicResource MutedBrush}"/>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <TextBlock FontSize="28" FontWeight="Bold" Text="BatchCraft"/>
+          <Border Background="{DynamicResource BadgeBgBrush}" BorderBrush="{DynamicResource BadgeBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="7,2" Margin="10,0,0,0" VerticalAlignment="Center">
+            <TextBlock Text="PRO v2.0" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource BadgeTextBrush}"/>
+          </Border>
+        </StackPanel>
+        <TextBlock x:Name="SubtitleText" Foreground="{DynamicResource MutedBrush}" Margin="0,3,0,0"/>
       </StackPanel>
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-        <Border Background="{DynamicResource InputBrush}" CornerRadius="6" Padding="10,6" Margin="0,0,12,0" VerticalAlignment="Center">
+        <Border Background="{DynamicResource PrivacyBgBrush}" BorderBrush="{DynamicResource PrivacyBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,5" Margin="0,0,10,0" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="🛡️ " FontSize="11" VerticalAlignment="Center"/>
+            <TextBlock x:Name="PrivacyBadgeText" Text="ทำงานในเครื่อง 100% ออฟไลน์" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource PrivacyTextBrush}" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Border>
+        <Border Background="{DynamicResource InputBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10,6" Margin="0,0,10,0" VerticalAlignment="Center">
           <TextBlock x:Name="VersionText" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource MutedBrush}"/>
         </Border>
         <Button x:Name="HeaderThaiButton" Content="ไทย" Padding="10,7" Click="Thai_Click"/>
@@ -658,12 +720,15 @@
         </Border>
       </TabItem>
     </TabControl>
-    <Border Grid.Row="2" Margin="0,14,0,0" Padding="12,9" Background="{DynamicResource StatusBrush}" CornerRadius="7">
+    <Border Grid.Row="2" Margin="0,14,0,0" Padding="14,10" Background="{DynamicResource StatusBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
       <Grid>
-        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="210"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-        <StackPanel>
-          <TextBlock x:Name="GlobalStatus"/>
-          <TextBlock x:Name="ProgressText" Margin="0,2,0,0" Foreground="{DynamicResource MutedBrush}" FontSize="11"/>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="220"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Ellipse Width="8" Height="8" Fill="{DynamicResource SuccessBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+          <TextBlock x:Name="GlobalStatus" FontWeight="SemiBold" VerticalAlignment="Center"/>
+          <TextBlock Text=" • " Foreground="{DynamicResource MutedBrush}" Margin="6,0" VerticalAlignment="Center"/>
+          <TextBlock x:Name="EngineStatusText" Text="เอนจิน: PDFium v12.4 (ออฟไลน์ 100%)" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+          <TextBlock x:Name="ProgressText" Margin="10,0,0,0" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
         </StackPanel>
         <ProgressBar x:Name="WorkProgress" Grid.Column="1" Height="8" Margin="12,0" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="0"/>
         <Button x:Name="OpenOutputButton" Grid.Column="2" Click="OpenOutput_Click" Margin="8,0,0,0" Visibility="Collapsed"/>
