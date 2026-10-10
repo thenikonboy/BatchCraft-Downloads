@@ -86,17 +86,18 @@
       <Setter Property="VerticalContentAlignment" Value="Stretch"/>
     </Style>
     <Style TargetType="TabItem">
-      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
       <Setter Property="Background" Value="{DynamicResource InputBrush}"/>
-      <Setter Property="Padding" Value="15,9"/>
-      <Setter Property="Margin" Value="0,0,6,0"/>
-      <Setter Property="Height" Value="40"/>
-      <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Padding" Value="15,8"/>
+      <Setter Property="Margin" Value="0,0,6,8"/>
+      <Setter Property="Height" Value="38"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="TabItem">
-            <Border x:Name="TabBorder" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8,8,0,0">
+            <Border x:Name="TabBorder" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
               <ContentPresenter ContentSource="Header" Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <ControlTemplate.Triggers>
@@ -105,10 +106,21 @@
                 <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter TargetName="TabBorder" Property="Effect">
+                  <Setter.Value>
+                    <DropShadowEffect Color="#2563EB" BlurRadius="12" ShadowDepth="2" Opacity="0.45"/>
+                  </Setter.Value>
+                </Setter>
               </Trigger>
-              <Trigger Property="IsMouseOver" Value="True">
+              <MultiTrigger>
+                <MultiTrigger.Conditions>
+                  <Condition Property="IsMouseOver" Value="True"/>
+                  <Condition Property="IsSelected" Value="False"/>
+                </MultiTrigger.Conditions>
+                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource DropBrush}"/>
                 <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
-              </Trigger>
+                <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+              </MultiTrigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
@@ -648,7 +660,7 @@
       </TabItem>
 
       <!-- 7. Settings (Accessible via tab or top-right Settings button) -->
-      <TabItem x:Name="SettingsTab">
+      <TabItem x:Name="SettingsTab" Margin="14,0,6,8">
         <TabItem.Header>
           <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <Path Width="14" Height="14" Stretch="Uniform" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" Margin="0,0,7,0" VerticalAlignment="Center" Data="{StaticResource IconSettingsGeometry}"/>
