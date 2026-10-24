@@ -1,7 +1,7 @@
-<Window x:Class="BatchCraft.App.MainWindow"
+﻿<Window x:Class="BatchCraft.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="BatchCraft 1.4.1" Icon="Assets/BatchCraft.ico"
+        Title="BatchCraft" Icon="Assets/BatchCraft.ico"
         Height="760" Width="1100" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource TextBrush}" FontFamily="Segoe UI">
   <Window.Resources>
@@ -165,12 +165,6 @@
         <TextBlock x:Name="SubtitleText" Foreground="{DynamicResource MutedBrush}" Margin="0,3,0,0"/>
       </StackPanel>
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-        <Border Background="{DynamicResource PrivacyBgBrush}" BorderBrush="{DynamicResource PrivacyBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,5" Margin="0,0,10,0" VerticalAlignment="Center">
-          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <TextBlock Text="🛡️ " FontSize="11" VerticalAlignment="Center"/>
-            <TextBlock x:Name="PrivacyBadgeText" Text="ทำงานในเครื่อง 100% ออฟไลน์" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource PrivacyTextBrush}" VerticalAlignment="Center"/>
-          </StackPanel>
-        </Border>
         <Border Background="{DynamicResource InputBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10,6" Margin="0,0,10,0" VerticalAlignment="Center">
           <TextBlock x:Name="VersionText" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource MutedBrush}"/>
         </Border>

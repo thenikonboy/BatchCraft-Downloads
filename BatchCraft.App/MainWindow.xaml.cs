@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -80,7 +80,6 @@ public partial class MainWindow : Window
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         VersionText.Text = $"v{version?.Major}.{version?.Minor}.{version?.Build}";
         SubtitleText.Text = T("เครื่องมือจัดการ PDF ความเร็วสูง ออฟไลน์ ปลอดภัย 100%", "High-speed, offline & 100% private PDF utility suite");
-        PrivacyBadgeText.Text = T("ทำงานในเครื่อง 100% ออฟไลน์", "100% Local • No Cloud Upload");
         EngineStatusText.Text = T("เอนจิน: PDFium v12.4 (ออฟไลน์ 100%)", "Engine: PDFium v12.4 (100% Offline)");
         SettingsButton.Content = T("⚙ ตั้งค่า", "⚙ Settings");
 
