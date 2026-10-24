@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
@@ -82,7 +82,7 @@ public sealed class UpdateService
         await VerifyDigestAsync(packagePath, update.Digest, cancellationToken);
         if (update.Kind == UpdatePackageKind.Installer)
         {
-            var start = new ProcessStartInfo { FileName = packagePath, Arguments = "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS", UseShellExecute = true };
+            var start = new ProcessStartInfo { FileName = packagePath, Arguments = "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS", UseShellExecute = true };
             _ = Process.Start(start) ?? throw new InvalidOperationException("Could not start the installer.");
             return;
         }

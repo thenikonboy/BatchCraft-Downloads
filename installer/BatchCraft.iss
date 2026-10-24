@@ -1,4 +1,4 @@
-#define MyAppName "BatchCraft"
+﻿#define MyAppName "BatchCraft"
 #define MyAppVersion "2.0.0"
 #define MyAppPublisher "thenikonboy"
 #define MyAppURL "https://github.com/thenikonboy/BatchCraft-Downloads"
@@ -52,7 +52,7 @@ Name: "{group}\ถอนการติดตั้ง BatchCraft"; Filename: "{
 Name: "{autodesktop}\BatchCraft"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "เปิด BatchCraft"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "เปิด BatchCraft"; Flags: nowait postinstall
 
 [Code]
 function InitializeSetup(): Boolean;
