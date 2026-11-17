@@ -85,6 +85,15 @@ try
     await File.WriteAllTextAsync(testDupPath, "first");
     var nonConflicting = PdfToolService.GetNonConflictingPath(testDupPath);
     Assert(nonConflicting.EndsWith("dup_test (1).txt"), "auto-rename duplicate filename");
+
+    // Test ThemeService presets & color parsing
+    Assert(ThemeService.All.Count == 8, "8 theme presets registered");
+    Assert(ThemeService.Resolve("dark").Id == "midnight", "legacy dark resolves to midnight");
+    Assert(ThemeService.Resolve("light").Id == "daylight", "legacy light resolves to daylight");
+    Assert(ThemeService.Resolve("unknown").Id == "midnight", "unknown theme falls back to midnight");
+    var resDict = new System.Windows.ResourceDictionary();
+    foreach (var theme in ThemeService.All) ThemeService.Apply(resDict, theme);
+    Assert(resDict.Contains("TabActiveShadow") && resDict.Contains("AccentHoverBrush"), "theme brushes and tab shadow applied");
 }
 finally { try { Directory.Delete(work, true); } catch { } }
 

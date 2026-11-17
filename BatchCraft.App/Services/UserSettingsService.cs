@@ -34,7 +34,7 @@ public sealed class UserSettingsService
 public sealed class UserSettings
 {
     public string Language { get; set; } = "th";
-    public string Theme { get; set; } = "dark";
+    public string Theme { get; set; } = ThemeService.DefaultThemeId;
     public string LastInputFolder { get; set; } = "";
     public string LastOutputFolder { get; set; } = "";
     public string DefaultOutputFolder { get; set; } = "";

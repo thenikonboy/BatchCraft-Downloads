@@ -43,6 +43,9 @@ public partial class MainWindow : Window
     private int watermarkPdfPage;
     private int watermarkPdfTotalPages;
 
+    private string lastDarkThemeId = ThemeService.DefaultThemeId;
+    private string lastLightThemeId = ThemeService.DefaultLightThemeId;
+
     private PdfToolService PdfTools => pdfTools ??= new PdfToolService();
     private bool IsThai => settings.Language == "th";
     public ObservableCollection<string> PdfToImagesFiles { get; } = [];
@@ -53,7 +56,10 @@ public partial class MainWindow : Window
     {
         settings = settingsService.Load();
         if (settings.Language is not ("th" or "en")) settings.Language = "th";
-        if (settings.Theme is not ("dark" or "light")) settings.Theme = "dark";
+        var initialTheme = ThemeService.Resolve(settings.Theme);
+        settings.Theme = initialTheme.Id;
+        if (initialTheme.IsDark) lastDarkThemeId = initialTheme.Id;
+        else lastLightThemeId = initialTheme.Id;
         InitializeComponent();
         SetDisplayedProductVersion();
         PdfToImagesList.ItemsSource = PdfToImagesFiles;
@@ -196,13 +202,11 @@ public partial class MainWindow : Window
         // Settings
         SettingsTitle.Text = T("ตั้งค่า", "Settings");
         SettingsHint.Text = T("BatchCraft จะจำค่าที่เลือกไว้สำหรับครั้งถัดไป", "BatchCraft remembers these choices for the next launch");
-        ThemeLabel.Text = T("ธีม", "Theme");
+        ThemeLabel.Text = T("สไตล์ธีม (8 สไตล์)", "Theme Styles (8 Presets)");
         LanguageLabel.Text = T("ภาษา", "Language");
         DefaultFolderLabel.Text = T("โฟลเดอร์ผลลัพธ์เริ่มต้น", "Default output folder");
         PickDefaultFolderButton.Content = T("เลือกโฟลเดอร์…", "Select folder…");
         SettingsUpdateButton.Content = T("ตรวจอัปเดต", "Check updates");
-        DarkThemeButton.Content = T("🌙 โหมดมืด", "🌙 Dark mode");
-        LightThemeButton.Content = T("☀ โหมดสว่าง", "☀ Light mode");
 
         // About
         AboutTitle.Text = T("เกี่ยวกับ BatchCraft", "About BatchCraft");
@@ -216,33 +220,154 @@ public partial class MainWindow : Window
         CoffeeButton.Content = T("เปิดช่องทางสนับสนุนออนไลน์", "Open online support");
         OpenOutputButton.Content = T("เปิดโฟลเดอร์ผลลัพธ์", "Open output folder");
 
+        UpdateThemeSelectors();
         UpdateChoiceButtons();
         if (string.IsNullOrWhiteSpace(GlobalStatus.Text)) GlobalStatus.Text = T("พร้อมใช้งาน", "Ready");
     }
 
     private void ApplyTheme()
     {
-        var dark = settings.Theme == "dark";
-        SetBrush("WindowBrush", dark ? "#0B0F19" : "#F8FAFC");
-        SetBrush("PanelBrush", dark ? "#111827" : "#FFFFFF");
-        SetBrush("InputBrush", dark ? "#151F32" : "#F1F5F9");
-        SetBrush("TextBrush", dark ? "#F8FAFC" : "#0F172A");
-        SetBrush("MutedBrush", dark ? "#94A3B8" : "#64748B");
-        SetBrush("BorderBrush", dark ? "#1E293B" : "#CBD5E1");
-        SetBrush("AccentBrush", "#2563EB");
-        SetBrush("DropBrush", dark ? "#0F172A" : "#EFF6FF");
-        SetBrush("StatusBrush", dark ? "#0B1120" : "#F1F5F9");
-        SetBrush("SuccessBrush", dark ? "#10B981" : "#059669");
-        SetBrush("BadgeBgBrush", dark ? "#1E3A8A" : "#EFF6FF");
-        SetBrush("BadgeBorderBrush", dark ? "#3B82F6" : "#BFDBFE");
-        SetBrush("BadgeTextBrush", dark ? "#60A5FA" : "#1D4ED8");
-        SetBrush("PrivacyBgBrush", dark ? "#064E3B" : "#ECFDF5");
-        SetBrush("PrivacyBorderBrush", dark ? "#059669" : "#A7F3D0");
-        SetBrush("PrivacyTextBrush", dark ? "#34D399" : "#047857");
+        var theme = ThemeService.Resolve(settings.Theme);
+        settings.Theme = theme.Id;
+        if (theme.IsDark) lastDarkThemeId = theme.Id;
+        else lastLightThemeId = theme.Id;
+        ThemeService.Apply(Resources, theme);
+        UpdateThemeSelectors();
         UpdateChoiceButtons();
     }
 
-    private void SetBrush(string key, string color) => Resources[key] = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(color));
+    private void UpdateThemeSelectors()
+    {
+        if (!IsInitialized) return;
+        var activeTheme = ThemeService.Resolve(settings.Theme);
+        HeaderThemeName.Text = IsThai ? activeTheme.NameTh : activeTheme.NameEn;
+        HeaderThemeButton.ToolTip = T("เลือกสไตล์ธีม", "Choose theme style");
+        HeaderDarkButton.ToolTip = T("สลับเป็นโหมดมืด", "Switch to dark theme");
+        HeaderLightButton.ToolTip = T("สลับเป็นโหมดสว่าง", "Switch to light theme");
+
+        ThemeCardsPanel.Children.Clear();
+        HeaderThemeListPanel.Children.Clear();
+        foreach (var theme in ThemeService.All)
+        {
+            var isSelected = theme.Id == activeTheme.Id;
+            ThemeCardsPanel.Children.Add(CreateThemeCard(theme, isSelected));
+            HeaderThemeListPanel.Children.Add(CreateHeaderThemeItem(theme, isSelected));
+        }
+    }
+
+    private System.Windows.Controls.Button CreateThemeCard(AppTheme theme, bool isSelected)
+    {
+        var swatchRow = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        swatchRow.Children.Add(CreateColorDot(theme.Window, 14, theme.Border));
+        swatchRow.Children.Add(CreateColorDot(theme.Panel, 14, theme.Border));
+        swatchRow.Children.Add(CreateColorDot(theme.Accent, 14));
+
+        var modeBadge = new TextBlock
+        {
+            Text = theme.IsDark ? "🌙" : "☀",
+            FontSize = 11,
+            Foreground = (System.Windows.Media.Brush)FindResource("MutedBrush"),
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+        var topGrid = new Grid { Margin = new Thickness(0, 0, 0, 8) };
+        topGrid.Children.Add(swatchRow);
+        topGrid.Children.Add(modeBadge);
+
+        var titleText = new TextBlock
+        {
+            Text = IsThai ? theme.NameTh : theme.NameEn,
+            FontWeight = isSelected ? FontWeights.Bold : FontWeights.SemiBold,
+            FontSize = 12,
+            Foreground = (System.Windows.Media.Brush)FindResource("TextBrush"),
+            TextTrimming = TextTrimming.CharacterEllipsis
+        };
+
+        var subText = new TextBlock
+        {
+            Text = isSelected ? T("✓ ใช้งานอยู่", "✓ Active") : (theme.IsDark ? T("โทนมืด", "Dark") : T("โทนสว่าง", "Light")),
+            FontSize = 10.5,
+            Margin = new Thickness(0, 2, 0, 0),
+            Foreground = (System.Windows.Media.Brush)FindResource(isSelected ? "AccentBrush" : "MutedBrush"),
+            FontWeight = isSelected ? FontWeights.SemiBold : FontWeights.Normal
+        };
+
+        var body = new StackPanel();
+        body.Children.Add(topGrid);
+        body.Children.Add(titleText);
+        body.Children.Add(subText);
+
+        var card = new System.Windows.Controls.Button
+        {
+            Content = body,
+            Margin = new Thickness(0, 0, 10, 10),
+            Padding = new Thickness(12, 10, 12, 10),
+            HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch,
+            Background = (System.Windows.Media.Brush)FindResource(isSelected ? "DropBrush" : "InputBrush"),
+            BorderBrush = (System.Windows.Media.Brush)FindResource(isSelected ? "AccentBrush" : "BorderBrush"),
+            BorderThickness = new Thickness(isSelected ? 2 : 1)
+        };
+        card.Click += (_, _) => SelectTheme(theme.Id);
+        return card;
+    }
+
+    private System.Windows.Controls.Button CreateHeaderThemeItem(AppTheme theme, bool isSelected)
+    {
+        var row = new DockPanel { LastChildFill = true };
+        var dot = CreateColorDot(theme.Accent, 10);
+        dot.VerticalAlignment = VerticalAlignment.Center;
+        DockPanel.SetDock(dot, Dock.Left);
+        row.Children.Add(dot);
+
+        var tag = new TextBlock
+        {
+            Text = isSelected ? "✓" : (theme.IsDark ? "🌙" : "☀"),
+            FontSize = 11,
+            Foreground = (System.Windows.Media.Brush)FindResource(isSelected ? "AccentTextBrush" : "MutedBrush"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(8, 0, 0, 0)
+        };
+        DockPanel.SetDock(tag, Dock.Right);
+        row.Children.Add(tag);
+
+        row.Children.Add(new TextBlock
+        {
+            Text = IsThai ? theme.NameTh : theme.NameEn,
+            FontSize = 12,
+            FontWeight = isSelected ? FontWeights.SemiBold : FontWeights.Normal,
+            Foreground = (System.Windows.Media.Brush)FindResource(isSelected ? "AccentTextBrush" : "TextBrush"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(4, 0, 0, 0)
+        });
+
+        var item = new System.Windows.Controls.Button
+        {
+            Content = row,
+            Margin = new Thickness(0, 1, 0, 1),
+            Padding = new Thickness(10, 7, 10, 7),
+            HorizontalContentAlignment = System.Windows.HorizontalAlignment.Stretch,
+            Background = (System.Windows.Media.Brush)FindResource(isSelected ? "AccentBrush" : "PanelBrush"),
+            BorderThickness = new Thickness(0)
+        };
+        item.Click += (_, _) =>
+        {
+            HeaderThemePopup.IsOpen = false;
+            SelectTheme(theme.Id);
+        };
+        return item;
+    }
+
+    private static System.Windows.Shapes.Ellipse CreateColorDot(string hex, double size, string? strokeHex = null) => new()
+    {
+        Width = size,
+        Height = size,
+        Margin = new Thickness(0, 0, 5, 0),
+        Fill = ThemeService.CreateBrush(hex),
+        Stroke = strokeHex is null ? null : ThemeService.CreateBrush(strokeHex),
+        StrokeThickness = strokeHex is null ? 0 : 1
+    };
+
     private void SyncSettingsControls() { applyingSettings = true; DefaultFolderText.Text = settings.DefaultOutputFolder; applyingSettings = false; UpdateChoiceButtons(); }
     private void SaveSettings() => settingsService.Save(settings);
     private void MainTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -256,22 +381,24 @@ public partial class MainWindow : Window
         else MainTabs.SelectedItem = SettingsTab;
         UpdateChoiceButtons();
     }
-    private void DarkTheme_Click(object sender, RoutedEventArgs e) => SelectTheme("dark");
-    private void LightTheme_Click(object sender, RoutedEventArgs e) => SelectTheme("light");
+    private void HeaderThemeButton_Click(object sender, RoutedEventArgs e) => HeaderThemePopup.IsOpen = !HeaderThemePopup.IsOpen;
+    private void DarkTheme_Click(object sender, RoutedEventArgs e) => SelectTheme(lastDarkThemeId);
+    private void LightTheme_Click(object sender, RoutedEventArgs e) => SelectTheme(lastLightThemeId);
     private void Thai_Click(object sender, RoutedEventArgs e) => SelectLanguage("th");
     private void English_Click(object sender, RoutedEventArgs e) => SelectLanguage("en");
-    private void SelectTheme(string value) { if (applyingSettings || settings.Theme == value) return; settings.Theme = value; SaveSettings(); ApplyTheme(); }
+    private void SelectTheme(string value) { var resolved = ThemeService.Resolve(value).Id; if (applyingSettings || settings.Theme == resolved) return; settings.Theme = resolved; SaveSettings(); ApplyTheme(); }
     private void SelectLanguage(string value) { if (applyingSettings || settings.Language == value) return; settings.Language = value; SaveSettings(); ApplyLanguage(); }
     private void UpdateChoiceButtons()
     {
         if (!IsInitialized) return;
-        SetChoice(DarkThemeButton, settings.Theme == "dark"); SetChoice(HeaderDarkButton, settings.Theme == "dark");
-        SetChoice(LightThemeButton, settings.Theme == "light"); SetChoice(HeaderLightButton, settings.Theme == "light");
+        var activeTheme = ThemeService.Resolve(settings.Theme);
+        SetChoice(HeaderDarkButton, activeTheme.IsDark);
+        SetChoice(HeaderLightButton, !activeTheme.IsDark);
         SetChoice(ThaiButton, IsThai); SetChoice(HeaderThaiButton, IsThai);
         SetChoice(EnglishButton, !IsThai); SetChoice(HeaderEnglishButton, !IsThai);
         SetChoice(SettingsButton, MainTabs?.SelectedItem == SettingsTab);
     }
-    private void SetChoice(System.Windows.Controls.Button button, bool selected) { button.Background = (System.Windows.Media.Brush)FindResource(selected ? "AccentBrush" : "InputBrush"); button.Foreground = (System.Windows.Media.Brush)FindResource(selected ? "TextBrush" : "MutedBrush"); button.BorderBrush = (System.Windows.Media.Brush)FindResource(selected ? "AccentBrush" : "BorderBrush"); }
+    private void SetChoice(System.Windows.Controls.Button button, bool selected) { button.Background = (System.Windows.Media.Brush)FindResource(selected ? "AccentBrush" : "InputBrush"); button.Foreground = (System.Windows.Media.Brush)FindResource(selected ? "AccentTextBrush" : "MutedBrush"); button.BorderBrush = (System.Windows.Media.Brush)FindResource(selected ? "AccentBrush" : "BorderBrush"); }
     private void ZoomOut_Click(object sender, RoutedEventArgs e) { if (sender is FrameworkElement { Tag: Slider slider }) slider.Value = Math.Max(slider.Minimum, slider.Value - 0.1); }
     private void ZoomIn_Click(object sender, RoutedEventArgs e) { if (sender is FrameworkElement { Tag: Slider slider }) slider.Value = Math.Min(slider.Maximum, slider.Value + 0.1); }
     private void Preview_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
