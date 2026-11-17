@@ -750,7 +750,7 @@
           <Ellipse Width="8" Height="8" Fill="{DynamicResource SuccessBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
           <TextBlock x:Name="GlobalStatus" FontWeight="SemiBold" VerticalAlignment="Center"/>
           <TextBlock Text=" • " Foreground="{DynamicResource MutedBrush}" Margin="6,0" VerticalAlignment="Center"/>
-          <TextBlock x:Name="EngineStatusText" Text="เอนจิน: PDFium v12.4 (ออฟไลน์ 100%)" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+          <TextBlock x:Name="EngineStatusText" Text="เอนจิน: PDFium v12.4" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
           <TextBlock x:Name="ProgressText" Margin="10,0,0,0" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
         </StackPanel>
         <ProgressBar x:Name="WorkProgress" Grid.Column="1" Height="8" Margin="12,0" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="0"/>

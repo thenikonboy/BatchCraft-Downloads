@@ -80,7 +80,7 @@ public partial class MainWindow : Window
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         VersionText.Text = $"v{version?.Major}.{version?.Minor}.{version?.Build}";
         SubtitleText.Text = T("เครื่องมือจัดการ PDF ความเร็วสูง ออฟไลน์ ปลอดภัย 100%", "High-speed, offline & 100% private PDF utility suite");
-        EngineStatusText.Text = T("เอนจิน: PDFium v12.4 (ออฟไลน์ 100%)", "Engine: PDFium v12.4 (100% Offline)");
+        EngineStatusText.Text = T("เอนจิน: PDFium v12.4", "Engine: PDFium v12.4");
         SettingsButton.Content = T("⚙ ตั้งค่า", "⚙ Settings");
 
         // Tab Headers

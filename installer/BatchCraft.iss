@@ -52,7 +52,8 @@ Name: "{group}\ถอนการติดตั้ง BatchCraft"; Filename: "{
 Name: "{autodesktop}\BatchCraft"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "เปิด BatchCraft"; Flags: nowait postinstall
+Filename: "{app}\{#MyAppExeName}"; Description: "เปิด BatchCraft"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Flags: nowait; Check: WizardSilent
 
 [Code]
 function InitializeSetup(): Boolean;
