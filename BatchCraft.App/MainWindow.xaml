@@ -175,16 +175,13 @@
       <StackPanel DockPanel.Dock="Left">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
           <TextBlock FontSize="28" FontWeight="Bold" Text="BatchCraft"/>
-          <Border Background="{DynamicResource BadgeBgBrush}" BorderBrush="{DynamicResource BadgeBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="7,2" Margin="10,0,0,0" VerticalAlignment="Center">
-            <TextBlock Text="PRO v2.0" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource BadgeTextBrush}"/>
+          <Border Background="{DynamicResource BadgeBgBrush}" BorderBrush="{DynamicResource BadgeBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,3" Margin="10,0,0,0" VerticalAlignment="Center">
+            <TextBlock x:Name="VersionText" Text="PRO" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource BadgeTextBrush}"/>
           </Border>
         </StackPanel>
         <TextBlock x:Name="SubtitleText" Foreground="{DynamicResource MutedBrush}" Margin="0,3,0,0"/>
       </StackPanel>
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-        <Border Background="{DynamicResource InputBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10,6" Margin="0,0,10,0" VerticalAlignment="Center">
-          <TextBlock x:Name="VersionText" FontWeight="SemiBold" FontSize="12" Foreground="{DynamicResource MutedBrush}"/>
-        </Border>
         <Button x:Name="HeaderThaiButton" Content="ไทย" Padding="10,7" Click="Thai_Click"/>
         <Button x:Name="HeaderEnglishButton" Content="EN" Padding="10,7" Click="English_Click"/>
         <Button x:Name="HeaderDarkButton" Content="🌙" ToolTip="Dark mode" Padding="10,7" Click="DarkTheme_Click"/>

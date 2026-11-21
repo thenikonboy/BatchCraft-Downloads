@@ -1,5 +1,5 @@
 ﻿#define MyAppName "BatchCraft"
-#define MyAppVersion "2.2.0"
+#define MyAppVersion "2.2.1"
 #define MyAppPublisher "thenikonboy"
 #define MyAppURL "https://github.com/thenikonboy/BatchCraft-Downloads"
 #define MyAppExeName "BatchCraft.exe"
