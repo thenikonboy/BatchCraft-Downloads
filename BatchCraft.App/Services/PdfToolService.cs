@@ -14,6 +14,13 @@ public enum RotationPageScope
     Custom
 }
 
+public enum PdfImagePageSize
+{
+    Original,
+    FitA4Auto,
+    A4Portrait
+}
+
 public sealed class PdfToolService
 {
     public static int GetPageCount(string pdfPath)
@@ -22,15 +29,16 @@ public sealed class PdfToolService
         return document.PageCount;
     }
 
-    public Task<int> PdfToImagesAsync(string inputPdf, string outputFolder, bool jpeg, IProgress<ToolProgress>? progress = null) =>
-        MultiplePdfsToImagesAsync([inputPdf], outputFolder, jpeg, null, progress);
+    public Task<int> PdfToImagesAsync(string inputPdf, string outputFolder, bool jpeg, IProgress<ToolProgress>? progress = null, int dpi = 200) =>
+        MultiplePdfsToImagesAsync([inputPdf], outputFolder, jpeg, null, progress, dpi);
 
     public Task<int> MultiplePdfsToImagesAsync(
         IReadOnlyList<string> inputPdfs, 
         string outputFolder, 
         bool jpeg, 
         Func<string, string>? resolveDestinationPath = null,
-        IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+        IProgress<ToolProgress>? progress = null,
+        int dpi = 200) => Task.Run(() =>
     {
         if (inputPdfs.Count == 0) throw new InvalidOperationException("Add at least one PDF file.");
         Directory.CreateDirectory(outputFolder);
@@ -50,6 +58,7 @@ public sealed class PdfToolService
         }
         if (totalPages == 0) throw new InvalidDataException("No readable pages found in selected PDF files.");
 
+        var renderOptions = new RenderOptions(Dpi: Math.Clamp(dpi, 72, 600));
         var convertedCount = 0;
         foreach (var (pdfPath, baseName, count) in docPageCounts)
         {
@@ -61,8 +70,8 @@ public sealed class PdfToolService
                 if (!string.IsNullOrWhiteSpace(finalDir)) Directory.CreateDirectory(finalDir);
 
                 using var input = File.OpenRead(pdfPath);
-                if (jpeg) Conversion.SaveJpeg(finalOutput, input, page: page);
-                else Conversion.SavePng(finalOutput, input, page: page);
+                if (jpeg) Conversion.SaveJpeg(finalOutput, input, page: page, options: renderOptions);
+                else Conversion.SavePng(finalOutput, input, page: page, options: renderOptions);
 
                 convertedCount++;
                 progress?.Report(new ToolProgress(convertedCount, totalPages));
@@ -71,19 +80,42 @@ public sealed class PdfToolService
         return convertedCount;
     });
 
-    public Task ImagesToPdfAsync(IReadOnlyList<string> images, string outputPdf, IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+    public Task ImagesToPdfAsync(
+        IReadOnlyList<string> images,
+        string outputPdf,
+        IProgress<ToolProgress>? progress = null,
+        PdfImagePageSize pageSize = PdfImagePageSize.Original,
+        double marginMm = 0) => Task.Run(() =>
     {
         if (images.Count == 0) throw new InvalidOperationException("Add at least one image.");
         using var document = new PdfDocument();
         document.Info.Title = Path.GetFileNameWithoutExtension(outputPdf);
+        var marginPt = XUnit.FromMillimeter(Math.Clamp(marginMm, 0, 30)).Point;
         for (var index = 0; index < images.Count; index++)
         {
             using var image = XImage.FromFile(images[index]);
             var page = document.AddPage();
-            page.Width = XUnit.FromPoint(image.PointWidth);
-            page.Height = XUnit.FromPoint(image.PointHeight);
             using var graphics = XGraphics.FromPdfPage(page);
-            graphics.DrawImage(image, 0, 0, page.Width.Point, page.Height.Point);
+            if (pageSize == PdfImagePageSize.Original)
+            {
+                page.Width = XUnit.FromPoint(image.PointWidth);
+                page.Height = XUnit.FromPoint(image.PointHeight);
+                graphics.DrawImage(image, 0, 0, page.Width.Point, page.Height.Point);
+            }
+            else
+            {
+                var landscape = pageSize == PdfImagePageSize.FitA4Auto && image.PointWidth > image.PointHeight;
+                page.Width = XUnit.FromMillimeter(landscape ? 297 : 210);
+                page.Height = XUnit.FromMillimeter(landscape ? 210 : 297);
+                var availW = Math.Max(10, page.Width.Point - (2 * marginPt));
+                var availH = Math.Max(10, page.Height.Point - (2 * marginPt));
+                var scale = Math.Min(availW / image.PointWidth, availH / image.PointHeight);
+                var drawW = image.PointWidth * scale;
+                var drawH = image.PointHeight * scale;
+                var x = (page.Width.Point - drawW) / 2.0;
+                var y = (page.Height.Point - drawH) / 2.0;
+                graphics.DrawImage(image, x, y, drawW, drawH);
+            }
             progress?.Report(new ToolProgress(index + 1, images.Count));
         }
         document.Save(outputPdf);
@@ -233,6 +265,73 @@ public sealed class PdfToolService
                 gfx.DrawString(watermarkText, font, brush, -size.Width / 2, size.Height / 4);
             }
             progress?.Report(new ToolProgress(pageIndex + 1, pageCount));
+        }
+
+        outputDoc.Save(outputPdf);
+        return pageCount;
+    });
+
+    public Task<int> ProtectPdfAsync(
+        string inputPdf,
+        string outputPdf,
+        string userPassword,
+        string? ownerPassword = null,
+        bool allowPrint = true,
+        bool allowCopy = false,
+        bool allowModify = false,
+        IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+    {
+        if (string.IsNullOrEmpty(userPassword) && string.IsNullOrEmpty(ownerPassword))
+            throw new InvalidOperationException("Provide at least one password.");
+
+        using var input = PdfReader.Open(inputPdf, PdfDocumentOpenMode.Import);
+        var pageCount = input.PageCount;
+        if (pageCount == 0) throw new InvalidDataException("The PDF has no readable pages.");
+
+        var outputDir = Path.GetDirectoryName(outputPdf);
+        if (!string.IsNullOrWhiteSpace(outputDir)) Directory.CreateDirectory(outputDir);
+
+        using var outputDoc = new PdfDocument();
+        for (var i = 0; i < pageCount; i++)
+        {
+            outputDoc.AddPage(input.Pages[i]);
+            progress?.Report(new ToolProgress(i + 1, pageCount));
+        }
+
+        var security = outputDoc.SecuritySettings;
+        security.OwnerPassword = string.IsNullOrEmpty(ownerPassword) ? userPassword : ownerPassword;
+        if (!string.IsNullOrEmpty(userPassword))
+            security.UserPassword = userPassword;
+        security.PermitPrint = allowPrint;
+        security.PermitFullQualityPrint = allowPrint;
+        security.PermitExtractContent = allowCopy;
+        security.PermitModifyDocument = allowModify;
+        security.PermitAnnotations = allowModify;
+        security.PermitFormsFill = allowModify;
+        security.PermitAssembleDocument = allowModify;
+
+        outputDoc.Save(outputPdf);
+        return pageCount;
+    });
+
+    public Task<int> UnlockPdfAsync(
+        string inputPdf,
+        string outputPdf,
+        string password,
+        IProgress<ToolProgress>? progress = null) => Task.Run(() =>
+    {
+        using var input = PdfReader.Open(inputPdf, password, PdfDocumentOpenMode.Import);
+        var pageCount = input.PageCount;
+        if (pageCount == 0) throw new InvalidDataException("The PDF has no readable pages.");
+
+        var outputDir = Path.GetDirectoryName(outputPdf);
+        if (!string.IsNullOrWhiteSpace(outputDir)) Directory.CreateDirectory(outputDir);
+
+        using var outputDoc = new PdfDocument();
+        for (var i = 0; i < pageCount; i++)
+        {
+            outputDoc.AddPage(input.Pages[i]);
+            progress?.Report(new ToolProgress(i + 1, pageCount));
         }
 
         outputDoc.Save(outputPdf);

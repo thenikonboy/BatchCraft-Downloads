@@ -9,18 +9,16 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Assets\BatchCraft.ico</ApplicationIcon>
     <AssemblyName>BatchCraft</AssemblyName>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <PublishReadyToRun>true</PublishReadyToRun>
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm"
-                      Version="8.3.2"
-                      ExcludeAssets="analyzers" />
     <PackageReference Include="PDFsharp-WPF" Version="6.2.4" />
-    <PackageReference Include="PDFtoImage" Version="5.3.0" />
+    <PackageReference Include="PDFtoImage" Version="5.4.0" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>

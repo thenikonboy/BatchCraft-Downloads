@@ -94,6 +94,36 @@ try
     var resDict = new System.Windows.ResourceDictionary();
     foreach (var theme in ThemeService.All) ThemeService.Apply(resDict, theme);
     Assert(resDict.Contains("TabActiveShadow") && resDict.Contains("AccentHoverBrush"), "theme brushes and tab shadow applied");
+
+    // Test Images to PDF with Fit A4 Auto + 10mm margin
+    var a4Pdf = Path.Combine(work, "a4_fitted.pdf");
+    await service.ImagesToPdfAsync([image1, image2], a4Pdf, null, PdfImagePageSize.FitA4Auto, 10.0);
+    using var a4Doc = PdfSharp.Pdf.IO.PdfReader.Open(a4Pdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+    var p0 = a4Doc.Pages[0];
+    var p1 = a4Doc.Pages[1];
+    Assert(a4Doc.PageCount == 2 && Math.Abs(p0.Width.Millimeter - 297) < 1 && Math.Abs(p0.Height.Millimeter - 210) < 1 && Math.Abs(p1.Width.Millimeter - 210) < 1 && Math.Abs(p1.Height.Millimeter - 297) < 1, "images to PDF fits wide/tall images to A4 auto orientation");
+
+    // Test DPI control in MultiplePdfsToImagesAsync
+    var dpi150Dir = Path.Combine(work, "dpi150");
+    var dpi300Dir = Path.Combine(work, "dpi300");
+    await service.MultiplePdfsToImagesAsync([a4Pdf], dpi150Dir, false, null, null, 150);
+    await service.MultiplePdfsToImagesAsync([a4Pdf], dpi300Dir, false, null, null, 300);
+    using var bmp150 = new System.Drawing.Bitmap(Directory.GetFiles(dpi150Dir, "*.png")[0]);
+    using var bmp300 = new System.Drawing.Bitmap(Directory.GetFiles(dpi300Dir, "*.png")[0]);
+    Assert(bmp300.Width > bmp150.Width && bmp300.Height > bmp150.Height, "higher DPI outputs higher resolution PNG");
+
+    // Test Protect & Unlock PDF
+    var protectedPdf = Path.Combine(work, "protected.pdf");
+    await service.ProtectPdfAsync(a4Pdf, protectedPdf, "secret123", "owner456", allowPrint: true, allowCopy: false, allowModify: false);
+    Throws<Exception>(() => PdfSharp.Pdf.IO.PdfReader.Open(protectedPdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import), "protected PDF rejects opening without password");
+    using (var openedProtected = PdfSharp.Pdf.IO.PdfReader.Open(protectedPdf, "secret123", PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import))
+    {
+        Assert(openedProtected.PageCount == 2, "protected PDF opens with user password");
+    }
+    var unlockedPdf = Path.Combine(work, "unlocked.pdf");
+    var unlockPages = await service.UnlockPdfAsync(protectedPdf, unlockedPdf, "secret123");
+    using var openedUnlocked = PdfSharp.Pdf.IO.PdfReader.Open(unlockedPdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+    Assert(unlockPages == 2 && openedUnlocked.PageCount == 2, "unlocked PDF opens without password");
 }
 finally { try { Directory.Delete(work, true); } catch { } }
 

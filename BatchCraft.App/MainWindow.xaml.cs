@@ -43,6 +43,10 @@ public partial class MainWindow : Window
     private int watermarkPdfPage;
     private int watermarkPdfTotalPages;
 
+    private string? protectPdfPath;
+    private int protectPdfPage;
+    private int protectPdfTotalPages;
+
     private string lastDarkThemeId = ThemeService.DefaultThemeId;
     private string lastLightThemeId = ThemeService.DefaultLightThemeId;
 
@@ -96,6 +100,7 @@ public partial class MainWindow : Window
         SplitPdfTabHeader.Text = T("แยก PDF", "Split PDF");
         RotatePdfTabHeader.Text = T("หมุน PDF", "Rotate PDF");
         WatermarkPdfTabHeader.Text = T("ใส่ลายน้ำ", "Watermark");
+        ProtectPdfTabHeader.Text = T("ล็อก PDF", "Protect PDF");
         SettingsTabHeader.Text = T("ตั้งค่า", "Settings");
         AboutTabHeader.Text = T("เกี่ยวกับ", "About");
 
@@ -109,6 +114,7 @@ public partial class MainWindow : Window
         ClearPdfItemsButton.Content = T("ล้างทั้งหมด", "Clear all");
         ImageOutputLabel.Text = T("โฟลเดอร์เก็บรูป", "Image output folder");
         PickImageOutputButton.Content = T("เลือกโฟลเดอร์…", "Select folder…");
+        DpiLabel.Text = T("ความละเอียด:", "Resolution:");
         PngOption.Content = T("PNG (คมชัด)", "PNG (high quality)");
         JpegOption.Content = T("JPG (ไฟล์เล็ก)", "JPG (smaller files)");
         ConvertPdfButton.Content = T("เริ่มแปลง PDF เป็นรูปภาพ", "Convert PDF to images");
@@ -118,7 +124,13 @@ public partial class MainWindow : Window
         ImagesToPdfTitle.Text = T("รวมรูปหลายรูปเป็น PDF ไฟล์เดียว", "Combine images into one PDF");
         ImagesToPdfHint.Text = T("ลากรูปทั้งหมดมาวาง แล้วจัดลำดับด้วยปุ่มขึ้น/ลง", "Drop images here, then arrange them with the up/down buttons");
         DropImagesText.Text = T("วางไฟล์รูปภาพที่นี่", "Drop image files here");
+        DropImagesSubtext.Text = T("ลากไฟล์รูปภาพหลายรูปมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์", "Drag and drop multiple images here or click to browse");
         AddImagesButton.Content = T("เลือกหลายรูป", "Select images");
+        ImagePageSizeLabel.Text = T("ขนาดหน้า:", "Page size:");
+        ImageSizeOriginalOption.Content = T("ขนาดตามรูปต้นฉบับ", "Original size");
+        ImageSizeA4AutoOption.Content = T("พอดี A4 (อัตโนมัติ)", "Fit A4 (Auto)");
+        ImageSizeA4PortraitOption.Content = T("A4 แนวตั้ง", "A4 Portrait");
+        ImageMarginCheck.Content = T("เว้นขอบ 10 มม.", "10 mm margin");
         ImagePreviewEmpty.Text = T("เลือกรูปจากรายการ\nเพื่อดูภาพตัวอย่าง", "Select an image from the list\nto preview it");
 
         // 3. Merge PDF
@@ -191,6 +203,27 @@ public partial class MainWindow : Window
         StartWatermarkButton.Content = T("บันทึก PDF พร้อมลายน้ำ", "Save watermarked PDF");
         WatermarkPreviewEmpty.Text = T("เลือก PDF เพื่อดู\nตัวอย่างหน้า", "Select a PDF to preview\npages");
 
+        // 7. Protect / Unlock PDF
+        ProtectPdfTabHeader.Text = T("ล็อก PDF", "Protect PDF");
+        ProtectPdfTitle.Text = T("ใส่รหัสผ่าน / ปลดล็อก PDF", "Protect or Unlock PDF");
+        ProtectPdfHint.Text = T("ตั้งรหัสเปิดไฟล์และจำกัดสิทธิ์ หรือถอดรหัสผ่าน PDF ที่มีรหัส", "Encrypt a PDF with password & permissions, or remove password protection");
+        DropProtectPdfText.Text = T("วางไฟล์ PDF ที่นี่", "Drop a PDF here");
+        PickProtectPdfButton.Content = T("เลือก PDF", "Select PDF");
+        ProtectModeLabel.Text = T("โหมดการทำงาน", "Operation mode");
+        LockPdfOption.Content = T("🔒 ล็อกด้วยรหัสผ่าน (Protect)", "🔒 Lock with password");
+        UnlockPdfOption.Content = T("🔓 ปลดล็อกรหัสผ่าน (Unlock)", "🔓 Unlock PDF");
+        ProtectUserPassLabel.Text = T("รหัสผ่านสำหรับเปิดไฟล์ (Open Password)", "Password to open PDF");
+        ProtectOwnerPassLabel.Text = T("รหัสผ่านผู้ดูแล (Owner Password — ไม่บังคับ)", "Owner password (optional)");
+        ProtectPermissionsLabel.Text = T("สิทธิ์การใช้งานเอกสาร", "Document permissions");
+        AllowPrintCheck.Content = T("อนุญาตให้พิมพ์", "Allow printing");
+        AllowCopyCheck.Content = T("อนุญาตให้คัดลอกข้อความ", "Allow copying");
+        AllowModifyCheck.Content = T("อนุญาตให้แก้ไข", "Allow modifying");
+        UnlockPassLabel.Text = T("กรอกรหัสผ่านปัจจุบันของไฟล์ PDF", "Current PDF password");
+        ProtectOutputLabel.Text = T("โฟลเดอร์ผลลัพธ์", "Output folder");
+        PickProtectOutputButton.Content = T("เลือกโฟลเดอร์…", "Select folder…");
+        UpdateProtectButtonText();
+        ProtectPreviewEmpty.Text = T("เลือก PDF เพื่อดู\nตัวอย่างหน้า", "Select a PDF to preview\npages");
+
         // Common Buttons
         RemoveImageButton.Content = RemovePdfButton.Content = T("ลบ", "Remove");
         ImageUpButton.Content = PdfUpButton.Content = T("↑ ขึ้น", "↑ Up");
@@ -211,7 +244,7 @@ public partial class MainWindow : Window
         // About
         AboutTitle.Text = T("เกี่ยวกับ BatchCraft", "About BatchCraft");
         AboutPurposeTitle.Text = T("จุดประสงค์", "Purpose");
-        AboutPurposeText.Text = T("BatchCraft สร้างขึ้นเพื่อให้ผู้ใช้ทั่วไปจัดการงาน PDF ประจำวันได้ง่าย รวดเร็ว และไม่ต้องส่งเอกสารขึ้นเว็บไซต์ภายนอก รองรับการแปลง PDF เป็นรูปภาพ รวมรูปเป็น PDF รวม PDF หลายไฟล์ แยกหน้า PDF หมุนหน้า PDF และใส่ลายน้ำเอกสาร", "BatchCraft helps everyday users complete common PDF tasks simply and quickly without uploading documents to external websites. It converts PDF pages to images, combines images into a PDF, merges multiple PDFs, splits PDFs, rotates PDF pages, and adds watermarks to PDFs.");
+        AboutPurposeText.Text = T("BatchCraft สร้างขึ้นเพื่อให้ผู้ใช้ทั่วไปจัดการงาน PDF ประจำวันได้ง่าย รวดเร็ว และไม่ต้องส่งเอกสารขึ้นเว็บไซต์ภายนอก รองรับการแปลง PDF เป็นรูปภาพ รวมรูปเป็น PDF รวม PDF หลายไฟล์ แยกหน้า PDF หมุนหน้า PDF ใส่ลายน้ำ และล็อก/ปลดล็อกรหัสผ่าน PDF", "BatchCraft helps everyday users complete common PDF tasks simply and quickly without uploading documents to external websites. It converts PDF pages to images, combines images into a PDF, merges multiple PDFs, splits PDFs, rotates PDF pages, adds watermarks, and protects/unlocks PDFs.");
         AboutPrivacyTitle.Text = T("ความเป็นส่วนตัว", "Privacy");
         AboutPrivacyText.Text = T("การแปลงไฟล์ทั้งหมดทำงานภายในเครื่อง โปรแกรมเชื่อมต่ออินเทอร์เน็ตเฉพาะเมื่อตรวจสอบอัปเดตจาก GitHub เท่านั้น", "All file processing happens locally. The app only connects to the internet when checking GitHub for updates.");
         ProjectPageButton.Content = T("เปิดหน้าโปรเจกต์", "Open project page");
@@ -431,7 +464,8 @@ public partial class MainWindow : Window
     // 1. PDF -> Images
     private void PickPdf_Click(object s, RoutedEventArgs e) => AddPdfToImages(PickFiles("PDF files (*.pdf)|*.pdf", true, settings.LastInputFolder));
     private void AddMorePdfs_Click(object s, RoutedEventArgs e) => AddPdfToImages(PickFiles("PDF files (*.pdf)|*.pdf", true, settings.LastInputFolder));
-    private void RemovePdfItem_Click(object s, RoutedEventArgs e) => RemoveSelected(PdfToImagesFiles, PdfToImagesList.SelectedItem as string);
+    private void RemovePdfItem_Click(object s, RoutedEventArgs e) => RemoveSelectedItems(PdfToImagesFiles, PdfToImagesList);
+    private void PdfToImagesList_KeyDown(object s, System.Windows.Input.KeyEventArgs e) { if (e.Key == System.Windows.Input.Key.Delete) RemoveSelectedItems(PdfToImagesFiles, PdfToImagesList); }
     private void ClearPdfItems_Click(object s, RoutedEventArgs e)
     {
         PdfToImagesFiles.Clear();
@@ -442,6 +476,7 @@ public partial class MainWindow : Window
         pdfToImagesPage = 0;
         pdfToImagesTotalPages = 0;
     }
+    private int GetSelectedDpi() => Dpi150Option.IsChecked == true ? 150 : Dpi300Option.IsChecked == true ? 300 : Dpi600Option.IsChecked == true ? 600 : 200;
     private void PickImageOutput_Click(object s, RoutedEventArgs e) { var path = PickFolder(PreferredOutputFolder(ImageOutputText.Text)); if (path is null) return; ImageOutputText.Text = path; RememberOutputFolder(path); }
     private async void ConvertPdf_Click(object s, RoutedEventArgs e)
     {
@@ -451,6 +486,7 @@ public partial class MainWindow : Window
         Directory.CreateDirectory(outputFolder);
 
         var isJpeg = JpegOption.IsChecked == true;
+        var dpi = GetSelectedDpi();
         var ext = isJpeg ? "jpg" : "png";
         var potentialFiles = new List<string>();
         foreach (var pdf in PdfToImagesFiles)
@@ -468,7 +504,7 @@ public partial class MainWindow : Window
 
         await RunTool(async progress =>
         {
-            var count = await PdfTools.MultiplePdfsToImagesAsync(PdfToImagesFiles.ToList(), outputFolder, isJpeg, resolver, progress);
+            var count = await PdfTools.MultiplePdfsToImagesAsync(PdfToImagesFiles.ToList(), outputFolder, isJpeg, resolver, progress, dpi);
             return new ToolResult(count, outputFolder);
         });
     }
@@ -526,15 +562,22 @@ public partial class MainWindow : Window
 
     // 2. Images -> PDF
     private void AddImages_Click(object s, RoutedEventArgs e) => AddImages(PickFiles("Image files|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tif;*.tiff", true, settings.LastInputFolder));
-    private void RemoveImage_Click(object s, RoutedEventArgs e) => RemoveSelected(ImageFiles, ImageList.SelectedItem as string);
+    private void RemoveImage_Click(object s, RoutedEventArgs e) => RemoveSelectedItems(ImageFiles, ImageList);
+    private void ImageList_KeyDown(object s, System.Windows.Input.KeyEventArgs e) { if (e.Key == System.Windows.Input.Key.Delete) RemoveSelectedItems(ImageFiles, ImageList); }
     private void ImageUp_Click(object s, RoutedEventArgs e) => MoveSelected(ImageFiles, ImageList.SelectedItem as string, -1);
     private void ImageDown_Click(object s, RoutedEventArgs e) => MoveSelected(ImageFiles, ImageList.SelectedItem as string, 1);
     private void ClearImages_Click(object s, RoutedEventArgs e) => ImageFiles.Clear();
+    private PdfImagePageSize GetSelectedImagePageSize() =>
+        ImageSizeA4AutoOption.IsChecked == true ? PdfImagePageSize.FitA4Auto :
+        ImageSizeA4PortraitOption.IsChecked == true ? PdfImagePageSize.A4Portrait :
+        PdfImagePageSize.Original;
     private async void CreatePdf_Click(object s, RoutedEventArgs e)
     {
         if (ImageFiles.Count == 0) { ShowError(T("กรุณาเพิ่มรูปอย่างน้อย 1 รูป", "Add at least one image.")); return; }
         var output = PickOutputPdf("images-combined.pdf"); if (output is null) return;
-        await RunTool(async progress => { await PdfTools.ImagesToPdfAsync(ImageFiles.ToList(), output, progress); return new ToolResult(ImageFiles.Count, Path.GetDirectoryName(output)!); });
+        var pageSize = GetSelectedImagePageSize();
+        var marginMm = pageSize != PdfImagePageSize.Original && ImageMarginCheck.IsChecked == true ? 10.0 : 0.0;
+        await RunTool(async progress => { await PdfTools.ImagesToPdfAsync(ImageFiles.ToList(), output, progress, pageSize, marginMm); return new ToolResult(ImageFiles.Count, Path.GetDirectoryName(output)!); });
     }
     private void Images_Drop(object sender, System.Windows.DragEventArgs e) => AddImages(DroppedFiles(e));
     private void AddImages(IEnumerable<string> files) { var accepted = files.Where(x => File.Exists(x) && ImageExtensions.Contains(Path.GetExtension(x), StringComparer.OrdinalIgnoreCase)).ToList(); foreach (var file in accepted) if (!ImageFiles.Contains(file, StringComparer.OrdinalIgnoreCase)) ImageFiles.Add(file); if (accepted.Count > 0) { RememberInputFolder(accepted[0]); ImageList.SelectedItem ??= accepted[0]; } GlobalStatus.Text = accepted.Count > 0 ? T($"เพิ่มรูปแล้ว {accepted.Count} ไฟล์", $"Added {accepted.Count} image(s)") : T("ไม่พบไฟล์รูปภาพที่รองรับ", "No supported images found"); }
@@ -547,7 +590,8 @@ public partial class MainWindow : Window
 
     // 3. Merge PDF
     private void AddPdfs_Click(object s, RoutedEventArgs e) => AddPdfs(PickFiles("PDF files (*.pdf)|*.pdf", true, settings.LastInputFolder));
-    private void RemovePdf_Click(object s, RoutedEventArgs e) => RemoveSelected(PdfFiles, PdfList.SelectedItem as string);
+    private void RemovePdf_Click(object s, RoutedEventArgs e) => RemoveSelectedItems(PdfFiles, PdfList);
+    private void PdfList_KeyDown(object s, System.Windows.Input.KeyEventArgs e) { if (e.Key == System.Windows.Input.Key.Delete) RemoveSelectedItems(PdfFiles, PdfList); }
     private void PdfUp_Click(object s, RoutedEventArgs e) => MoveSelected(PdfFiles, PdfList.SelectedItem as string, -1);
     private void PdfDown_Click(object s, RoutedEventArgs e) => MoveSelected(PdfFiles, PdfList.SelectedItem as string, 1);
     private void ClearPdfs_Click(object s, RoutedEventArgs e) => PdfFiles.Clear();
@@ -853,6 +897,117 @@ public partial class MainWindow : Window
         await LoadPdfPreviewAsync(watermarkPdfPath, watermarkPdfPage, WatermarkPreviewImage, WatermarkPreviewEmpty, WatermarkPageIndicator, (p, t) => { watermarkPdfPage = p; watermarkPdfTotalPages = t; });
     }
 
+    // 7. Protect / Unlock PDF
+    private void PickProtectPdf_Click(object s, RoutedEventArgs e)
+    {
+        var files = PickFiles("PDF files (*.pdf)|*.pdf", false, settings.LastInputFolder);
+        if (files.Length > 0) _ = SetProtectPdfAsync(files[0]);
+    }
+    private void ProtectPdf_Drop(object s, System.Windows.DragEventArgs e)
+    {
+        var file = DroppedFiles(e).FirstOrDefault(IsPdf);
+        if (file is null) { ShowError(T("วางไฟล์ PDF เท่านั้น", "Drop a PDF file only.")); return; }
+        _ = SetProtectPdfAsync(file);
+    }
+    private async Task SetProtectPdfAsync(string file)
+    {
+        protectPdfPath = file;
+        protectPdfPage = 0;
+        ProtectPdfInputText.Text = file;
+        RememberInputFolder(file);
+        if (string.IsNullOrEmpty(ProtectOutputText.Text))
+            ProtectOutputText.Text = PreferredOutputFolder(Path.GetDirectoryName(file));
+        await LoadPdfPreviewAsync(file, protectPdfPage, ProtectPreviewImage, ProtectPreviewEmpty, ProtectPageIndicator, (p, t) => { protectPdfPage = p; protectPdfTotalPages = t; });
+        if (ProtectPreviewImage.Source is null && File.Exists(file))
+            ProtectPreviewEmpty.Text = T("ไฟล์นี้อาจถูกล็อกด้วยรหัสผ่าน\nกรอกรหัสผ่านในโหมดปลดล็อกเพื่อถอดรหัส", "This PDF may be password-protected.\nSwitch to Unlock mode and enter the password.");
+        else
+            ProtectPreviewEmpty.Text = T("เลือก PDF เพื่อดู\nตัวอย่างหน้า", "Select a PDF to preview\npages");
+    }
+    private void ProtectMode_Changed(object s, RoutedEventArgs e)
+    {
+        if (!IsInitialized) return;
+        var isLock = LockPdfOption.IsChecked == true;
+        LockPasswordPanel.Visibility = isLock ? Visibility.Visible : Visibility.Collapsed;
+        UnlockPasswordPanel.Visibility = isLock ? Visibility.Collapsed : Visibility.Visible;
+        UpdateProtectButtonText();
+    }
+    private void UpdateProtectButtonText()
+    {
+        if (!IsInitialized) return;
+        StartProtectButton.Content = LockPdfOption.IsChecked == true
+            ? T("🔒 บันทึก PDF ที่ล็อกรหัสผ่าน", "🔒 Save protected PDF")
+            : T("🔓 บันทึก PDF ที่ปลดล็อกแล้ว", "🔓 Save unlocked PDF");
+    }
+    private void PickProtectOutput_Click(object s, RoutedEventArgs e) { var path = PickFolder(PreferredOutputFolder(ProtectOutputText.Text)); if (path is null) return; ProtectOutputText.Text = path; RememberOutputFolder(path); }
+    private async void StartProtect_Click(object s, RoutedEventArgs e)
+    {
+        var inputPdf = ProtectPdfInputText.Text;
+        if (!File.Exists(inputPdf)) { ShowError(T("กรุณาเลือกไฟล์ PDF ก่อน", "Please select a PDF file first.")); return; }
+        var outputFolder = PreferredOutputFolder(ProtectOutputText.Text);
+        if (!Directory.Exists(outputFolder)) { ShowError(T("กรุณาเลือกโฟลเดอร์ผลลัพธ์", "Please select an output folder.")); return; }
+
+        var isLock = LockPdfOption.IsChecked == true;
+        var suffix = isLock ? "-protected.pdf" : "-unlocked.pdf";
+        var outputPdf = Path.Combine(outputFolder, $"{Path.GetFileNameWithoutExtension(inputPdf)}{suffix}");
+
+        if (isLock)
+        {
+            var userPass = ProtectUserPassBox.Password;
+            var ownerPass = ProtectOwnerPassBox.Password;
+            if (string.IsNullOrEmpty(userPass) && string.IsNullOrEmpty(ownerPass))
+            {
+                ShowError(T("กรุณากรอกรหัสผ่านอย่างน้อย 1 ช่อง", "Please enter at least one password."));
+                return;
+            }
+            if (File.Exists(outputPdf))
+            {
+                var res = CheckDuplicatePrompt([outputPdf]);
+                if (res == DuplicateResolution.Cancel) return;
+                if (res == DuplicateResolution.AutoRename) outputPdf = PdfToolService.GetNonConflictingPath(outputPdf);
+            }
+            var allowPrint = AllowPrintCheck.IsChecked == true;
+            var allowCopy = AllowCopyCheck.IsChecked == true;
+            var allowModify = AllowModifyCheck.IsChecked == true;
+            await RunTool(async progress =>
+            {
+                var count = await PdfTools.ProtectPdfAsync(inputPdf, outputPdf, userPass, ownerPass, allowPrint, allowCopy, allowModify, progress);
+                return new ToolResult(count, Path.GetDirectoryName(outputPdf)!);
+            });
+        }
+        else
+        {
+            var pass = UnlockPassBox.Password;
+            if (string.IsNullOrEmpty(pass))
+            {
+                ShowError(T("กรุณากรอกรหัสผ่านปัจจุบันของไฟล์ PDF", "Please enter the PDF password."));
+                return;
+            }
+            if (File.Exists(outputPdf))
+            {
+                var res = CheckDuplicatePrompt([outputPdf]);
+                if (res == DuplicateResolution.Cancel) return;
+                if (res == DuplicateResolution.AutoRename) outputPdf = PdfToolService.GetNonConflictingPath(outputPdf);
+            }
+            await RunTool(async progress =>
+            {
+                var count = await PdfTools.UnlockPdfAsync(inputPdf, outputPdf, pass, progress);
+                return new ToolResult(count, Path.GetDirectoryName(outputPdf)!);
+            });
+        }
+    }
+    private async void ProtectPrevPage_Click(object sender, RoutedEventArgs e)
+    {
+        if (protectPdfTotalPages <= 1 || protectPdfPage <= 0) return;
+        protectPdfPage--;
+        await LoadPdfPreviewAsync(protectPdfPath, protectPdfPage, ProtectPreviewImage, ProtectPreviewEmpty, ProtectPageIndicator, (p, t) => { protectPdfPage = p; protectPdfTotalPages = t; });
+    }
+    private async void ProtectNextPage_Click(object sender, RoutedEventArgs e)
+    {
+        if (protectPdfTotalPages <= 1 || protectPdfPage >= protectPdfTotalPages - 1) return;
+        protectPdfPage++;
+        await LoadPdfPreviewAsync(protectPdfPath, protectPdfPage, ProtectPreviewImage, ProtectPreviewEmpty, ProtectPageIndicator, (p, t) => { protectPdfPage = p; protectPdfTotalPages = t; });
+    }
+
     // Preview and Helper Methods
     private async Task LoadPdfPreviewAsync(
         string? path,
@@ -975,7 +1130,12 @@ public partial class MainWindow : Window
     private static string[] PickFiles(string filter, bool multiple, string initial) { var dialog = new Microsoft.Win32.OpenFileDialog { Filter = filter, Multiselect = multiple, InitialDirectory = Directory.Exists(initial) ? initial : "" }; return dialog.ShowDialog() == true ? dialog.FileNames : []; }
     private string? PickOutputPdf(string name) { var dialog = new Microsoft.Win32.SaveFileDialog { Filter = T("ไฟล์ PDF (*.pdf)|*.pdf", "PDF files (*.pdf)|*.pdf"), FileName = name, DefaultExt = ".pdf", InitialDirectory = PreferredOutputFolder() }; var result = dialog.ShowDialog() == true ? dialog.FileName : null; if (result is not null) RememberOutputFolder(Path.GetDirectoryName(result)!); return result; }
     private static string? PickFolder(string initial) { using var dialog = new Forms.FolderBrowserDialog { InitialDirectory = Directory.Exists(initial) ? initial : "" }; return dialog.ShowDialog() == Forms.DialogResult.OK ? dialog.SelectedPath : null; }
-    private static void RemoveSelected(ObservableCollection<string> list, string? item) { if (item is not null) list.Remove(item); }
+    private static void RemoveSelectedItems(ObservableCollection<string> list, System.Windows.Controls.ListBox listBox)
+    {
+        var selected = listBox.SelectedItems.OfType<string>().ToList();
+        if (selected.Count == 0 && listBox.SelectedItem is string single) selected.Add(single);
+        foreach (var item in selected) list.Remove(item);
+    }
     private static void MoveSelected(ObservableCollection<string> list, string? item, int offset) { if (item is null) return; var old = list.IndexOf(item); var next = old + offset; if (next >= 0 && next < list.Count) list.Move(old, next); }
     private static void ShowError(string text) => System.Windows.MessageBox.Show(text, "BatchCraft", MessageBoxButton.OK, MessageBoxImage.Warning);
     private sealed record ToolResult(int SuccessCount, string OutputFolder);
